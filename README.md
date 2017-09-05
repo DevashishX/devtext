@@ -20,10 +20,7 @@
 
 * Pageup and Pagedown
 _ _ _ _ _ _ _ _ _
-If Time permits following features are to be done:
-* Simple File Encryption / Decryption
-* Simple Word Prediction 
-* Auto Code Complete
+
 _ _ _ _ _ _ _ _ _
 
 >Developed by  Devashish Gaikwad : COEP IT : 111608023
