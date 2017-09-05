@@ -19,7 +19,6 @@
 * Syntax Highlighting
 
 * Pageup and Pagedown
-_ _ _ _ _ _ _ _ _
 
 _ _ _ _ _ _ _ _ _
 
