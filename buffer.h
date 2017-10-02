@@ -19,9 +19,11 @@ typedef struct buffer{
 }buffer;
 
 void bufInit(buffer *bf);
+void bufDestroy(buffer *bf);
+
 void bufSave(int fd, buffer bf);
 void bufLoad(int fd, buffer *bf);
-void bufDestroy(buffer *bf);
+
 void bufCpy(buffer *source, buffer *dest);
 void bufSearch(buffer *bf, char *search);
 void bufReplace(buffer *bf, char *search, char *replace);
