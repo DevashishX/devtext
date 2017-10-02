@@ -1,5 +1,11 @@
-#define LINEMAX 64
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
+#include <errno.h>
 
+#define LINEMAX 64
+int lines = 0;
 
 
 typedef struct buffer{
@@ -9,10 +15,9 @@ typedef struct buffer{
 	int  cur_line;
 	int num_chars;
 	int ch_mark[10];
-	int buff_no;
-	timeval mod_time;
+	struct timeval mod_time;
 
-	char line[LINEMAX];
+	char *line;
 
 
 
@@ -34,7 +39,7 @@ void lineRemove(buffer *bf, int loc, char ch);
 int lineSearch(char *search);
 int lineReplace(char *search, char *replace);
 
+void lineInit(buffer *bf);
 void linePrint(buffer *bf);
 int lineFull(buffer *bf);
 int lineEmpty(buffer *bf);
-
