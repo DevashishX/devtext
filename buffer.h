@@ -23,7 +23,7 @@ typedef struct buffer{
 
 }buffer;
 
-void bufInit(buffer *bf);
+int bufInit(buffer *bf);
 void bufDestroy(buffer *bf);
 
 void bufSave(int fd, buffer bf);

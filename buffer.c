@@ -6,12 +6,12 @@ void lineInit(buffer *bf){
 
 }
 
-void bufInit(buffer *bf){
+int bufInit(buffer *bf){
 	bf->next = NULL;
 	bf->prev = NULL;
 	bf->cur_line = lines;
 	bf->num_chars = 0;
-	if(gettimeofday(bf->mod_time) != 0){
+	if(gettimeofday(&(bf->mod_time), NULL) != 0){
 		perror("Time&Date Error: ");
 		return errno;
 	}
