@@ -1,11 +1,15 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
-#include <string.h>
-#include <sys/time.h>
+#include <fcntl.h>
 #include <errno.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/time.h>
 
-#define INFO printf("line %d : file %s : function %s\n", __LINE__, __FILE__, __func__)
-#define LINEMAX 64
+#define INFO printf("\nline %d : %s : %s\n", __LINE__, __FILE__, __func__)
+#define LINEMAX 20
 #define TRUE 1
 #define FALSE 0
 int lines = 0;
@@ -26,15 +30,20 @@ typedef struct buffer{
 
 }buffer;
 
-int bufInit(buffer *bf); ///done
+void bufInit(buffer *bf); ///done
 void bufDestroy(buffer *bf);
 
-void bufSave(int fd, buffer bf);
+void bufSave(int fd, buffer *bf);
 void bufLoad(int fd, buffer *bf);
+
+void bufCreateNext(buffer *bf);
+void bufInsert(buffer *bf);
 
 void bufCpy(buffer *source, buffer *dest);
 void bufSearch(buffer *bf, char *search);
 void bufReplace(buffer *bf, char *search, char *replace);
+
+void bufPrintAll(buffer *bf);
 
 void lineInsert(buffer *bf, int loc, char ch);
 void lineRemove(buffer *bf, int loc, char ch);
