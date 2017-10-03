@@ -98,6 +98,7 @@ void bufLoad(int fd, buffer *bf){
 				linenum++;
 				//printf("$$$$: %d\n", bf->cur_line);
 				i = 0;
+				continue;
 			}
 			else{
 
@@ -118,6 +119,7 @@ void bufLoad(int fd, buffer *bf){
 			linenum++;
 			//printf("####: %d\n", bf->cur_line);
 			i = 0;
+			continue;
 
 		}
 	i++;
