@@ -142,10 +142,10 @@ int main(int argc, char const *argv[])
 	int fd = open("test.txt", O_RDWR | O_CREAT , S_IRWXU);
 	bufLoad(fd, &bf1);
 	bufPrintAll(&bf1);
-	//bufSave(fd, &bf1);
+	bufSave(fd, &bf1);
 	close(fd);
 	bufDestroy(&bf1);
-	//printf("\n");
+	printf("\n");
 	return 0;
 }
 
