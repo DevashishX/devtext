@@ -2,7 +2,7 @@
 
 void lineInit(buffer *bf){
 	bf->line = (char *)malloc(sizeof(char) * LINEMAX);
-	bf->line = memset(bf->line, 0, LINEMAX);
+	bf->line = memset(bf->line, '+', LINEMAX);
 
 }
 
@@ -38,16 +38,21 @@ void bufCreateNext(buffer *bf){
 
 void bufDestroy(buffer *bf){
 	buffer *temp;
-	while(bf->next != NULL){
+	bf = bf->next;
+	while(bf != NULL){
 		temp = bf;
 		bf = bf->next;
-		free(temp->line);
 		free(temp);
+		free(temp->line);
 	}
 
 }
 
 void bufSave(int fd, buffer *bf){
+	if(lseek(fd, 0, SEEK_SET) == -1){
+		INFO;
+		perror("lseek error: ");
+	}
 	while(bf->next != NULL){
 		if(write(fd, bf->line, bf->num_chars) == -1){
 			INFO;
@@ -78,7 +83,7 @@ void bufLoad(int fd, buffer *bf){
 		if(err == -1){
 			INFO;
 			perror("Read Error: ");
-			return ;
+			exit(0);
 		}
 		if(i < LINEMAX){
 
@@ -122,7 +127,7 @@ void bufLoad(int fd, buffer *bf){
 void bufPrintAll(buffer *bf){
 
 	while(bf->next != NULL){
-		printf("line no: %d\n", bf->cur_line);
+		printf("line no: %d\t\t", bf->cur_line);
 		for(int i = 0; i < bf->num_chars; i++)
 			printf("%c", *(bf->line + i));
 		bf = bf->next;
@@ -132,9 +137,12 @@ int main(int argc, char const *argv[])
 {
 	buffer bf1;
 	printf("hi\n");
-	int fd = open("test.txt", O_RDONLY);
+	int fd = open("test.txt", O_RDWR | O_CREAT , S_IRWXU);
 	bufLoad(fd, &bf1);
 	bufPrintAll(&bf1);
+	//bufSave(fd, &bf1);
+	close(fd);
+	bufDestroy(&bf1);
 	//printf("\n");
 	return 0;
 }

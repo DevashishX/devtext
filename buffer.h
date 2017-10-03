@@ -9,7 +9,7 @@
 #include <sys/time.h>
 
 #define INFO printf("\nline %d : %s : %s\n", __LINE__, __FILE__, __func__)
-#define LINEMAX 20
+#define LINEMAX 10
 #define TRUE 1
 #define FALSE 0
 int lines = 0;
