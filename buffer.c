@@ -30,12 +30,12 @@ void bufInit(buffer *bf){
 
 }
 
-void bufCreateNext(buffer *bf){
+void bufCreateNext(buffer *bf){ //when next buffer is null
 	bf->next = (buffer *)malloc(sizeof(buffer) * 1);
 	bf->next->prev = bf;
 	bf->next->next = NULL;
+	bf->next->cur_line = bf->cur_line + 1;
 	bf = bf->next;
-	bf->cur_line = 0;
 	bf->num_chars = 0;
 	if(gettimeofday(&(bf->mod_time), NULL) == -1){
 		INFO;
@@ -44,6 +44,29 @@ void bufCreateNext(buffer *bf){
 	lineInit(bf);
 
 }
+
+void bufInsert(buffer *bf){ //insert b/w bf and bf->next buffers
+	if(bf->next == NULL){
+		bufCreateNext(bf);
+		return;
+	}
+	bufIncr(bf->next, 1);
+	buffer *temp;
+	temp = (buffer *)malloc(sizeof(buffer));
+	temp->next = bf->next;
+	temp->prev = bf;
+	bf->next->prev = temp;
+	bf->next = temp;
+	bf->next->cur_line = bf->cur_line + 1;
+	bf->next->num_chars = 0;
+	if(gettimeofday(&(bf->next->mod_time), NULL) == -1){
+		INFO;
+		perror("Time&Date Error: ");
+	}
+	lineInit(bf->next);
+
+}
+
 
 
 void bufDestroy(buffer *bf){
@@ -72,19 +95,7 @@ void bufSave(int fd, buffer *bf){
 	}
 }
 
-void bufInsertNext(buffer *bf){
-	if(bf->next == NULL){
-		bufCreateNext(bf);
-		return;
-	}
-	buffer *temp;
-	temp = (buffer *)malloc(sizeof(buffer));
-	temp->next = bf->next;
-	temp->prev = bf;
-	bf->next->prev = temp;
-	bf->next = temp;
 
-}
 
 void bufLoad(int fd, buffer *bf){
 	char ch;
@@ -183,6 +194,7 @@ void lineRemove(buffer *bf, int loc, char ch){
 	}
 	else if(bf->num_chars == 0){
 		printf("LINE_EMPTY, num_chars: %d, loc: %d\n", bf->num_chars, loc);
+		return;
 	}
 	else if(bf->num_chars <= LINEMAX && bf->num_chars > 0){
 		memmove((bf->line + loc), (bf->line + loc + 1), bf->num_chars - loc - 1);
@@ -192,7 +204,21 @@ void lineRemove(buffer *bf, int loc, char ch){
 
 }
 
+void bufDecr(buffer *bf, int val){
+	while(bf->next != NULL){
+		(bf->cur_line)--;
+		bf = bf->next;
+	}
+	(bf->cur_line)--;
+}
 
+void bufIncr(buffer *bf, int val){
+	while(bf->next != NULL){
+		(bf->cur_line)++;
+		bf = bf->next;
+	}
+	(bf->cur_line)++;
+}
 
 
 

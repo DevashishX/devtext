@@ -26,7 +26,7 @@ typedef struct buffer{
 	int cur_line;
 	int num_chars;
 	int curX;
-	
+
 	int ch_mark[10];
 	struct timeval mod_time;
 
@@ -61,5 +61,8 @@ void lineInit(buffer *bf); //done
 void linePrint(buffer *bf);
 int lineFull(buffer *bf);
 int lineEmpty(buffer *bf);
+
+void bufIncr(buffer *bf, int val);
+void bufDecr(buffer *bf, int val);
 
 #endif

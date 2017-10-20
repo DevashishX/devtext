@@ -17,7 +17,8 @@ int main(int argc, char const *argv[]){
 	int ht, wd;
 	int nolines = 0;
 	int x = 0, y = 0, offX = 0, offY = 0, ch;
-	buffer *bf;
+	char str[LINEMAX];
+	buffer *bf, *start, *temp;
 	bf = (buffer *)malloc(sizeof(buffer));
 	bufInit(bf);
 	if(argc == 2){
@@ -25,7 +26,7 @@ int main(int argc, char const *argv[]){
 		bufLoad(fd, bf);
 	}
 	else if(argc == 1){
-		fd = open(".untitled.txt", O_RDWR | O_CREAT , S_IRWXU);
+		//fd = open(".untitled.txt", O_RDWR | O_CREAT , S_IRWXU);
 		newfl = 1;
 	}
 	else{
@@ -34,9 +35,11 @@ int main(int argc, char const *argv[]){
 		exit(0);
 	}
 
+
+
 /* #################################### */
 	curses_init();
-	idlok(stdscr, TRUE);
+	//idlok(stdscr, TRUE);
 /* #################################### */
 	getmaxyx(stdscr, ht, wd);
 	WINDOW *local;
@@ -48,7 +51,7 @@ int main(int argc, char const *argv[]){
 	attron(COLOR_PAIR(2));
 	mvprintw(ht/2 - 1, wd/2 - (strlen("F2: SAVE F3: SEARCH")/2), "F2: SAVE F3: SEARCH");
 	mvprintw(ht/2 - 0, wd/2 - (strlen("F4: SEARCH & REPLACE")/2), "F4: SEARCH & REPLACE");
-	mvprintw(ht/2 + 1, wd/2 - (strlen("F5: QUIT F10: QUIT_ABRUPT")/2), "F5: QUIT F10: QUIT_ABRUPT ");
+	mvprintw(ht/2 + 1, wd/2 - (strlen("F5: SAVE & QUIT F10: QUIT NOSAVE")/2), "F5: SAVE & QUIT F10: QUIT NOSAVE");
 	mvprintw(ht/2 + 2, wd/2 - (strlen("WINDOW SIZE:     X    ")/2), "WINDOW SIZE: %3d X %3d", ht, wd); 
 	mvprintw(ht/2 + 3, wd/2 - (strlen("PRESS ANY KEY TO CONTINUE")/2), "PRESS ANY KEY TO CONTINUE", ht, wd);
 	attroff(COLOR_PAIR(3));
@@ -59,66 +62,151 @@ int main(int argc, char const *argv[]){
 	clear();
 	mvprintw(ht - 1, 0, "row : %3d   |   col: %3d", y, x);
 	move(y, x);
-	refresh();	
+	refresh();
+
+	start = bf;
+	loadwin(bf, 0);
+	move(0, 0);
 	while((ch = getch())){
 
 		switch (ch){
 			case KEY_UP:
-				if(y > 0)
-					move(--y, x);
+				if(y > 0){
+					bf = bf->prev;
+					if(x >= bf->num_chars){
+						x = bf->num_chars -1;	
+						move(--y, x);
+					}
+					else{
+						move(--y, x);
+					}
+				}
 				break;
 			case KEY_DOWN:
-				if(y < ht - 1)
-					move(++y, x);
+				if(y < ht - 1){
+					if(bf->next != NULL){
+						bf = bf->next;
+						if(x >= bf->num_chars){
+							x = bf->num_chars - 1;
+							move(++y, x);
+						}
+						else{
+							move(++y, x);
+						}
+					}
+				}
 				break;
 			case KEY_LEFT:
-				if(x > 0)
+				if(x > 0){
 					move(y, --x);
+				}
 				break;
 			case KEY_RIGHT:
-				if(x < wd)
+				if(x < LINEMAX - 1 && x < bf->num_chars){
 					move(y, ++x);
+				}
 				break;
 			case KEY_BACKSPACE:
-				if(x > 0){
+				if(x > 0 && x < LINEMAX){
 					addch(' ');					
 					move(y, --x);
 
 				}
 				else if(x == 0){
 					addch(' ');
-					if(y > 0)
+					if(y > 0){
 						move(--y, x);
+					}
 				}
 				
 					
+				break;
+			case KEY_HOME:
+				x = 0;
+				bf->curX = x;
+				move(y, bf->curX);
+				break;
+			case KEY_END:
+				x = bf->num_chars - 1;
+				bf->curX = x;
+				move(y, bf->curX);
 				break;
 			case KEY_NPAGE:
 				break;
 			case KEY_PPAGE:
 				break;
 			case '\n':
-				addch('\n');
-				move(++y, x = 0);	
+				temp = bf->next;
+				bf->curX = x;
+				lineInsert(bf, bf->curX, ch);
+				if(x < bf->num_chars -1){
+					move(++y, x = 0);
+					bufInsert(bf);
+					strncpy(bf->next->line, (bf->line + x + 1), bf->num_chars - x);
+					memset((bf->line + x + 1), '\0', bf->num_chars - x);
+					bf = bf->next;
+					clear();
+					loadwin(start, 0);
+
+				}
+				else if(x == bf->num_chars || x == bf->num_chars - 1){
+					move(++y, x = 0);
+					bufInsert(bf);
+					bf = bf->next;
+					clear();
+					loadwin(start, 0);					
+				}
+				//addch('\n');
+				//bufInsert(bf);
+				//bf = bf->next;
+				//move(++y, x = 0);	
+				clear();
+				loadwin(start, 0);
+				move(++y, x = 0);
+				/*while(x < LINEMAX){
+					mvaddch(y, x, ' ');
+					x++;
+				}*/
+				
+				//loadwin(bf->next, y + 1);
+
 				
 				break;
-			case KEY_F(2):
+			case KEY_F(2): //save
+				bufSave(fd, start);
 				break;
-			case KEY_F(3):
+			case KEY_F(3): //search
 				break;
-			case KEY_F(4):
+			case KEY_F(4): //search replace
 				break;
-			case KEY_F(5):
-				break;
+			case KEY_F(5): //save and quit
+				bufSave(fd, start);
 			case KEY_F(10):
+				bufDestroy(bf);
 				delwin(local);
 				endwin();
 				close(fd);
 				exit(0);
 				break;
 			default:
-				mvaddch(y, x, ch);
-				x++;
+				if(x >= 0 && x < LINEMAX){
+					//mvaddch(y, x, ch);
+					bf->curX = x;
+					lineInsert(bf, bf->curX, ch);
+					mvprintw(y, 0, "%s", bf->line);
+					if(x == LINEMAX - 1){
+						x = LINEMAX - 1;
+					}
+					else {
+						x++;
+					}
+					
+				}
+				else {
+					x = LINEMAX - 1;
+				}
+				/*bf->curX = x;
+				bf->line[curX]*/
 				break;
 
 
@@ -128,7 +216,7 @@ int main(int argc, char const *argv[]){
 		move(y, x);
 		refresh();
 
-		//mvaddch(y, x, ch);
+
 	}
 
 
@@ -138,5 +226,6 @@ int main(int argc, char const *argv[]){
 	delwin(local);
 	endwin();
 	close(fd);
+	bufDestroy(bf);
 	return 0;
 }
