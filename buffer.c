@@ -155,7 +155,16 @@ int curX;
 */
 
 void lineInsert(buffer *bf, int loc, char ch){
-	bf->
+	int start, end;
+	if(bf->num_chars == 0){
+		bf->line[0] = ch;
+	}
+	else if(bf->num_chars < LINEMAX - 1 && bf->num_chars > 0){
+
+	}
+	else if(bf->num_chars == LINEMAX - 1){
+
+	}
 }
 void lineRemove(buffer *bf, int loc, char ch);
 
