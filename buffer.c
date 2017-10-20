@@ -149,6 +149,22 @@ void bufPrintAll(buffer *bf){
 	}
 }
 
+/*int cur_line;
+int num_chars;
+int curX;
+*/
+
+void lineInsert(buffer *bf, int loc, char ch){
+	bf->
+}
+void lineRemove(buffer *bf, int loc, char ch);
+
+
+
+
+
+
+
 /*void bufSearch(buffer *bf, char *search){
 	char *found;
 	while(1){

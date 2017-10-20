@@ -25,8 +25,9 @@ typedef struct buffer{
 
 	int cur_line;
 	int num_chars;
-	int ch_mark[10];
 	int curX;
+	
+	int ch_mark[10];
 	struct timeval mod_time;
 
 	char *line;
