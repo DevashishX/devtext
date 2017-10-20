@@ -165,7 +165,7 @@ void lineInsert(buffer *bf, int loc, char ch){
 		(bf->num_chars)++;
 	}
 	else if(bf->num_chars < LINEMAX && bf->num_chars > 0){
-		memmove((bf->line + loc + 1), (bf->line + loc), bf->num_chars - loc - 1);
+		memmove((bf->line + loc + 1), (bf->line + loc), bf->num_chars - loc);
 		bf->line[loc] = ch;
 		(bf->num_chars)++;
 	}
@@ -179,8 +179,16 @@ void lineInsert(buffer *bf, int loc, char ch){
 void lineRemove(buffer *bf, int loc, char ch){
 	if(loc == bf->num_chars - 1){
 		bf->line[loc] = '\0';
+		(bf->num_chars)--;
 	}
-	else if()
+	else if(bf->num_chars == 0){
+		printf("LINE_EMPTY, num_chars: %d, loc: %d\n", bf->num_chars, loc);
+	}
+	else if(bf->num_chars <= LINEMAX && bf->num_chars > 0){
+		memmove((bf->line + loc), (bf->line + loc + 1), bf->num_chars - loc - 1);
+		bf->line[bf->num_chars - 1] = '\0';
+		(bf->num_chars)--;
+	}
 
 }
 
