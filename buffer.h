@@ -1,27 +1,32 @@
-#include <stdio.h>
+#ifndef BUFFER_H
+#define BUFFER_H 
+
+
+/*#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/stat.h>
+#include <sys/stat.h>*/
 #include <sys/time.h>
 
 #define INFO printf("\nline %d : %s : %s\n", __LINE__, __FILE__, __func__)
-#define LINEMAX 10
+#define LINEMAX 80
 #define TRUE 1
 #define FALSE 0
-int lines = 0;
+//int lines = 0;
 
 
 typedef struct buffer{
 	struct buffer *next;
 	struct buffer *prev;
 
-	int  cur_line;
+	int cur_line;
 	int num_chars;
 	int ch_mark[10];
+	int curX;
 	struct timeval mod_time;
 
 	char *line;
@@ -55,3 +60,5 @@ void lineInit(buffer *bf); //done
 void linePrint(buffer *bf);
 int lineFull(buffer *bf);
 int lineEmpty(buffer *bf);
+
+#endif

@@ -1,8 +1,18 @@
 #include "buffer.h"
 
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+
 void lineInit(buffer *bf){
 	bf->line = (char *)malloc(sizeof(char) * LINEMAX);
-	bf->line = memset(bf->line, '+', LINEMAX);
+	bf->line = memset(bf->line, '\0', LINEMAX);
 
 }
 
@@ -79,7 +89,7 @@ void bufInsertNext(buffer *bf){
 void bufLoad(int fd, buffer *bf){
 	char ch;
 	int err, linenum = 0, i = 0;
-	while(err = read(fd, &ch, 1)){
+	while((err = read(fd, &ch, 1))){
 		if(err == -1){
 			INFO;
 			perror("Read Error: ");
@@ -93,7 +103,7 @@ void bufLoad(int fd, buffer *bf){
 				bf->line[i] = ch;
 				bf->cur_line = linenum;
 				bf->num_chars = i+1;
-				printf("$$$$: %d\n", bf->cur_line);
+				//printf("$$$$: %d\n", bf->cur_line);
 				bf = bf->next;
 				linenum++;
 				//printf("$$$$: %d\n", bf->cur_line);
@@ -114,7 +124,7 @@ void bufLoad(int fd, buffer *bf){
 			bf->line[i] = ch;
 			bf->cur_line = linenum;
 			bf->num_chars = i+1;
-			printf("####: %d\n", bf->cur_line);
+			//printf("####: %d\n", bf->cur_line);
 			bf = bf->next;
 			linenum++;
 			//printf("####: %d\n", bf->cur_line);
@@ -126,6 +136,9 @@ void bufLoad(int fd, buffer *bf){
 	}
 }
 
+
+
+
 void bufPrintAll(buffer *bf){
 
 	while(bf->next != NULL){
@@ -135,7 +148,26 @@ void bufPrintAll(buffer *bf){
 		bf = bf->next;
 	}
 }
-int main(int argc, char const *argv[])
+
+/*void bufSearch(buffer *bf, char *search){
+	char *found;
+	while(1){
+		found = strstr(bf->line, search);
+		if(found == NULL && bf->next != NULL){
+			bf = bf->next;
+		}
+	}
+	if(found == NULL)
+		return NULL;
+	else{
+
+		return found;
+	}
+
+
+}*/
+
+/*int main(int argc, char const *argv[])
 {
 	buffer bf1;
 	printf("hi\n");
@@ -145,9 +177,10 @@ int main(int argc, char const *argv[])
 	bufSave(fd, &bf1);
 	close(fd);
 	bufDestroy(&bf1);
-	printf("\n");
+	printf("\nBUfend\n");
 	return 0;
-}
+}*/
+
 
 
 /*int bufInit(buffer *bf); ///done
