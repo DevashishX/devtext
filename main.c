@@ -59,8 +59,7 @@ int main(int argc, char const *argv[]){
 	clear();
 	mvprintw(ht - 1, 0, "row : %3d   |   col: %3d", y, x);
 	move(y, x);
-	refresh();
-
+	refresh();	
 	while((ch = getch())){
 
 		switch (ch){

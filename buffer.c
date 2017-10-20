@@ -155,18 +155,34 @@ int curX;
 */
 
 void lineInsert(buffer *bf, int loc, char ch){
-	int start, end;
-	if(bf->num_chars == 0){
+
+	if(loc == bf->num_chars){
+		bf->line[loc] = ch;
+		(bf->num_chars)++;
+	}
+	else if(bf->num_chars == 0){
 		bf->line[0] = ch;
+		(bf->num_chars)++;
 	}
-	else if(bf->num_chars < LINEMAX - 1 && bf->num_chars > 0){
-
+	else if(bf->num_chars < LINEMAX && bf->num_chars > 0){
+		memmove((bf->line + loc + 1), (bf->line + loc), bf->num_chars - loc - 1);
+		bf->line[loc] = ch;
+		(bf->num_chars)++;
 	}
-	else if(bf->num_chars == LINEMAX - 1){
-
+	else if(bf->num_chars == LINEMAX){
+		printf("LINE_FULL, num_chars: %d, loc: %d\n", bf->num_chars, loc);
+		return;
 	}
 }
-void lineRemove(buffer *bf, int loc, char ch);
+
+
+void lineRemove(buffer *bf, int loc, char ch){
+	if(loc == bf->num_chars - 1){
+		bf->line[loc] = '\0';
+	}
+	else if()
+
+}
 
 
 
