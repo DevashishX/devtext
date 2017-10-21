@@ -28,11 +28,23 @@ void mvclearline(int y, int x){
 
 void loadwin(buffer *bf, int y){
 	int x = 0;
-	while(bf->next != NULL){
+	while(bf != NULL){
 		mvprintw(y, x, "%s", bf->line);
 		y++;
 		bf = bf->next;
 	}
 	move(y, 0);
 	refresh();
+}
+
+
+void tildeall(){
+	int x = 0, y = 0, ht;
+	getmaxyx(stdscr, ht, x);
+	x = 0;
+	for(y = 0; y < ht; y ++){
+		mvaddch(y, x, '~');
+	}
+	refresh();
+	move(0, 0);
 }

@@ -1,13 +1,11 @@
-line 1
-line 2
-line 3
-line 4
-line 5
-line 6
-line 7
-line 8 line 8 line 8
+this is first statement.
+statement 2
 
+this is editor
+hi world !
 
+some statement
 
-
-line 9
+2nd last statemnt|
+gonna be last |
+LAST

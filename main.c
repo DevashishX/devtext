@@ -25,6 +25,7 @@ int main(int argc, char const *argv[]){
 	if(argc == 2){
 		fd = open(argv[1], O_RDWR | O_CREAT , S_IRWXU);
 		bufLoad(fd, bf);
+		strcpy(filename, argv[1]);
 	}
 	else if(argc == 1){
 
@@ -62,14 +63,17 @@ int main(int argc, char const *argv[]){
 	refresh();
 	getch();
 	clear();
+
 	attron(COLOR_PAIR(1));
 	mvprintw(ht - 1, 0, "row : %3d   |   col: %3d", y, x);
 	move(y, x);
 	attroff(COLOR_PAIR(1));
 	refresh();
 
+
+
 	start = bf;
-	loadwin(bf, 0);
+	loadwin(start, 0);
 	move(0, 0);
 	while((ch = getch())){
 
@@ -91,7 +95,7 @@ int main(int argc, char const *argv[]){
 					if(bf->next != NULL){
 						bf = bf->next;
 						if(x >= bf->num_chars){
-							if(bf->num_chars  != 0){
+							if(bf->num_chars  > 0){
 								x = bf->num_chars - 1;								
 							}
 							else{
@@ -117,14 +121,53 @@ int main(int argc, char const *argv[]){
 				break;
 			case KEY_BACKSPACE: //BACKSPACE IS HERE
 				bf->curX = x;
-				if(x > 0 && x < LINEMAX - 1 && x < bf->num_chars - 1){
-					lineRemove(bf, bf->curX);
-					mvclearline(y, 0);
-					mvprintw(y, 0, "%s", bf->line);
-					move(y, --x);
-						
-					//addch(' ');					
+				temp = bf->prev;
+				if(x == 0 && y ==0){
+					move(0, 0);
+				}
+				else if(x > 0 && x < bf->num_chars){
+					//mvdelch(y, x - 1);
+					memmove((bf->line + x - 1), (bf->line + x), bf->num_chars - x);
+					(bf->num_chars)--;
+					--x;
+					bf->curX = x;
+					loadwin(start, 0);
+					move(y, x);
 
+
+				}
+				else if(x == 0){
+					if(bf->prev != NULL && bf->prev->num_chars == 0){
+						bf->prev->num_chars = 1;
+					}
+					memmove((bf->prev->line + bf->prev->num_chars - 1), bf->line, (bf->num_chars - 1));
+					bf->prev->next = bf->next;
+					if(bf->next != NULL){
+						bf->next->prev = bf->prev;						
+					}
+					x = bf->num_chars - 1;
+					if(bf->prev->num_chars == 1 && bf->num_chars == 1){
+						bf->prev->num_chars = 1;
+					}
+					else{
+						bf->prev->num_chars = bf->prev->num_chars + bf->num_chars - 1;
+					}
+			
+					free(bf->line);
+					free(bf);
+					bf = temp;
+					clear();
+					loadwin(start, 0);	
+					move(--y, bf->curX = x = bf->num_chars - x);
+				}
+
+				/*if(x > 0 && x < LINEMAX - 1 && x < bf->num_chars - 1){
+					lineRemove(bf, y, bf->curX);
+					//mvclearline(y, 0);
+					mvdelch(y, x);
+					refresh();
+					//mvprintw(y, 0, "%s", bf->line);
+					move(y, --x);
 				}
 				else if(x == 0 && y > 0){
 					temp = bf->prev;
@@ -141,28 +184,14 @@ int main(int argc, char const *argv[]){
 					bf = temp;
 					clear();
 					loadwin(start, 0);
-					refresh();
-
-
-					/*lineRemove(bf, bf->curX);
-					mvclearline(y, x);
-					mvprintw(y, 0, "%s", bf->line);
-					move(y, 0);*/
-						
-					
-					
+					refresh();					
 				}
 				else if(x == 0 && y == 0){
 					move(0, 0);
 				}
 				else if(x == bf->num_chars - 1){
 					x--;
-
-					/*addch(' ');
-					if(y > 0){
-						move(--y, x);
-					}*/
-				}
+				}*/
 				break;
 			case KEY_HOME:
 				x = 0;
@@ -186,7 +215,7 @@ int main(int argc, char const *argv[]){
 			case '\n':
 				bf->curX = x;
 				lineInsert(bf, bf->curX, ch);
-				if(x <= bf->num_chars -1){
+				if(x < bf->num_chars -1){
 					bufInsert(bf);
 					memmove(bf->next->line, (bf->line + x + 1), bf->num_chars - x + 1);
 					memset((bf->line + x + 1), '\0', bf->num_chars - x);
@@ -226,9 +255,9 @@ int main(int argc, char const *argv[]){
 				mvclearline(ht - 1, 0);
 				if(newfl == 1){
 					attron(COLOR_PAIR(1));
-					mvprintw(ht - 1, 0, "Enter File name: ");
+					mvprintw(ht - 1, 0, "Enter file Name: ");
 					echo();
-					mvscanw(ht - 1, strlen("Enter File name: "), "%[^\n]s", filename);
+					mvscanw(ht - 1, strlen("Enter file Name: "), "%[^\n]s", filename);
 					noecho();
 					attroff(COLOR_PAIR(1));
 					fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
@@ -277,6 +306,7 @@ int main(int argc, char const *argv[]){
 				delwin(local);
 				endwin();
 				close(fd);
+				printf("%s\n", filename);
 				bufPrintAll(start);
 				bufDestroy(bf);
 				return 0;

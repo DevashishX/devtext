@@ -1,4 +1,6 @@
 #include "buffer.h"
+#include "gui_ncs.h"
+
 
 #include <stdio.h>
 #include <unistd.h>
@@ -145,11 +147,9 @@ void bufLoad(int fd, buffer *bf){
 		}
 	i++;
 	}
-	/*bufCreateNext(bf);
-	bf->next->line[0] = '\n';
-	bf->next->cur_line = linenum + 1;
-	bf->next->num_chars = 1;
-	bf->next->next = NULL;*/
+	bf = bf->prev;
+	free(bf->next);
+	bf->next = NULL;
 }
 
 
@@ -157,8 +157,8 @@ void bufLoad(int fd, buffer *bf){
 
 void bufPrintAll(buffer *bf){
 
-	while(bf->next != NULL){
-		printf("line no: %d\t num_chars: %d\t\t", bf->cur_line, bf->num_chars);
+	while(bf != NULL){
+		printf("line no: %d\t num_chars: %d\t\t@", bf->cur_line, bf->num_chars);
 		for(int i = 0; i < bf->num_chars; i++){
 			if(*(bf->line + i) == '\0'){
 				printf("#");
@@ -168,6 +168,7 @@ void bufPrintAll(buffer *bf){
 				
 			}	
 		}
+		printf("@");
 		
 		bf = bf->next;
 	}
@@ -200,7 +201,45 @@ void lineInsert(buffer *bf, int loc, char ch){
 }
 
 
-void lineRemove(buffer *bf, int loc){
+buffer* lineRemove(buffer *bf, int y, int x){
+	buffer *temp;
+	temp = bf->prev;
+	if(x == 0 && y ==0){
+		return bf;
+	}
+	else if(x > 0 && x < bf->num_chars){
+		mvdelch(y, x - 1);
+		memmove((bf->line + x - 1), (bf->line + x), bf->num_chars - x);
+		(bf->num_chars)--;
+		return bf;
+
+	}
+	else if(x == 0){
+		if(bf->prev != NULL && bf->prev->num_chars == 0){
+			bf->prev->num_chars = 1;
+		}
+		memmove((bf->prev->line + bf->prev->num_chars - 1), bf->line, (bf->num_chars - 1));
+		bf->prev->next = bf->next;
+		bf->next->prev = bf->prev;
+		x = bf->num_chars - 1;
+		if(bf->prev->num_chars == 1 && bf->num_chars == 1){
+			bf->prev->num_chars = 1;
+		}
+		else{
+			bf->prev->num_chars = bf->prev->num_chars + bf->num_chars - 2;
+		}
+		
+		free(bf->line);
+		free(bf);
+		bf = temp;
+		return bf;
+
+
+	}
+
+
+
+/*
 	if(loc == bf->num_chars - 1){
 		bf->line[loc] = '\0';
 		(bf->num_chars)--;
@@ -213,7 +252,7 @@ void lineRemove(buffer *bf, int loc){
 		memmove((bf->line + loc), (bf->line + loc + 1), bf->num_chars - loc - 1);
 		bf->line[bf->num_chars - 1] = '\0';
 		(bf->num_chars)--;
-	}
+	}*/
 
 }
 

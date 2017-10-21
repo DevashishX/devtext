@@ -52,7 +52,7 @@ void bufReplace(buffer *bf, char *search, char *replace);
 void bufPrintAll(buffer *bf);
 
 void lineInsert(buffer *bf, int loc, char ch);
-void lineRemove(buffer *bf, int loc);
+buffer* lineRemove(buffer *bf, int y, int x);
 
 int lineSearch(char *search);
 int lineReplace(char *search, char *replace);
