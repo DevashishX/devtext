@@ -117,7 +117,7 @@ int main(int argc, char const *argv[]){
 				break;
 			case KEY_BACKSPACE: //BACKSPACE IS HERE
 				bf->curX = x;
-				if(x > 0 && x < LINEMAX - 1 && x <= bf->num_chars - 1){
+				if(x > 0 && x < LINEMAX - 1 && x < bf->num_chars - 1){
 					lineRemove(bf, bf->curX);
 					mvclearline(y, 0);
 					mvprintw(y, 0, "%s", bf->line);
@@ -129,12 +129,12 @@ int main(int argc, char const *argv[]){
 				else if(x == 0 && y > 0){
 					temp = bf->prev;
 
-					memmove((bf->prev->line + bf->prev->num_chars - 1), (bf->line), bf->num_chars - 1);
+					memmove((bf->prev->line + bf->prev->num_chars - 1), (bf->line), bf->num_chars);
 					bf->next->prev = bf->prev;
 					bf->prev->next = bf->next;
 					bufDecr(bf->next, 1);
 					bf->prev->curX = bf->prev->num_chars;
-					bf->prev->num_chars = bf->prev->num_chars + bf->num_chars - 2;
+					bf->prev->num_chars = bf->prev->num_chars + bf->num_chars - 1;
 					move(--y, x = bf->prev->curX);
 					free(bf->line);
 					free(bf);
