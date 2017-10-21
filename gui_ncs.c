@@ -21,10 +21,16 @@ void curses_init(){
 
 }
 
+void mvclearline(int y, int x, int lim){
+	for(int i = x; i <= lim; i++){
+		mvprintw(y, i, " ");
+	}
+	move(y, x);
+}
 
 void loadwin(buffer *bf, int y){
 	int x = 0;
-	while(bf != NULL){
+	while(bf->next != NULL){
 		mvprintw(y, x, "%s", bf->line);
 		y++;
 		bf = bf->next;

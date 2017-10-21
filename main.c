@@ -17,7 +17,8 @@ int main(int argc, char const *argv[]){
 	int ht, wd;
 	int nolines = 0;
 	int x = 0, y = 0, offX = 0, offY = 0, ch;
-	char str[LINEMAX];
+	char str[LINEMAX], filename[255];
+	memset(filename, '\0', 255);
 	buffer *bf, *start, *temp;
 	bf = (buffer *)malloc(sizeof(buffer));
 	bufInit(bf);
@@ -26,7 +27,7 @@ int main(int argc, char const *argv[]){
 		bufLoad(fd, bf);
 	}
 	else if(argc == 1){
-		//fd = open(".untitled.txt", O_RDWR | O_CREAT , S_IRWXU);
+
 		newfl = 1;
 	}
 	else{
@@ -71,7 +72,7 @@ int main(int argc, char const *argv[]){
 
 		switch (ch){
 			case KEY_UP:
-				if(y > 0){
+				if(y > 0 && bf != NULL && bf->prev != NULL){
 					bf = bf->prev;
 					if(x >= bf->num_chars){
 						x = bf->num_chars -1;	
@@ -83,11 +84,16 @@ int main(int argc, char const *argv[]){
 				}
 				break;
 			case KEY_DOWN:
-				if(y < ht - 1){
+				if(y < ht - 1 && bf != NULL){
 					if(bf->next != NULL){
 						bf = bf->next;
 						if(x >= bf->num_chars){
-							x = bf->num_chars - 1;
+							if(bf->num_chars  != 0){
+								x = bf->num_chars - 1;								
+							}
+							else{
+								x = 0;
+							}
 							move(++y, x);
 						}
 						else{
@@ -127,7 +133,12 @@ int main(int argc, char const *argv[]){
 				move(y, bf->curX);
 				break;
 			case KEY_END:
-				x = bf->num_chars - 1;
+				if(bf->num_chars > 0){
+					x = bf->num_chars - 1;					
+				}
+				else{
+					x = 0;
+				}
 				bf->curX = x;
 				move(y, bf->curX);
 				break;
@@ -136,10 +147,9 @@ int main(int argc, char const *argv[]){
 			case KEY_PPAGE:
 				break;
 			case '\n':
-				temp = bf->next;
 				bf->curX = x;
 				lineInsert(bf, bf->curX, ch);
-				if(x < bf->num_chars -1){
+				if(x <= bf->num_chars -1){
 					bufInsert(bf);
 					memmove(bf->next->line, (bf->line + x + 1), bf->num_chars - x + 1);
 					memset((bf->line + x + 1), '\0', bf->num_chars - x);
@@ -176,6 +186,20 @@ int main(int argc, char const *argv[]){
 				
 				break;
 			case KEY_F(2): //save
+				mvclearline(ht - 1, 0, wd - 1);
+				if(newfl == 1){
+					mvprintw(ht - 1, 0, "Enter File name: ");
+					echo();
+					mvscanw(ht - 1, strlen("Enter File name: "), "%s", filename);
+					noecho();
+					fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+					newfl = 0;
+					bf = start;
+					clear();
+					loadwin(start, 0);
+					move(0, 0);
+
+				}
 				bufSave(fd, start);
 				break;
 			case KEY_F(3): //search

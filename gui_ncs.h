@@ -7,6 +7,7 @@
 
 #define warr 5
 
+void mvclearline(int y, int x, int lim);
 void curses_init();
 void loadwin(buffer *bf, int y);
 void keyhit(WINDOW *win, buffer *bf, int ch, int x, int y);

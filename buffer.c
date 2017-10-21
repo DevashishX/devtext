@@ -145,6 +145,11 @@ void bufLoad(int fd, buffer *bf){
 		}
 	i++;
 	}
+	/*bufCreateNext(bf);
+	bf->next->line[0] = '\n';
+	bf->next->cur_line = linenum + 1;
+	bf->next->num_chars = 1;
+	bf->next->next = NULL;*/
 }
 
 
