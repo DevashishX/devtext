@@ -5,6 +5,8 @@
 
 >arrow keys work
 
+>HOME, END work
+
 >enter works
 
 >backspace partially works
