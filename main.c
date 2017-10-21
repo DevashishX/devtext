@@ -145,18 +145,18 @@ int main(int argc, char const *argv[]){
 					memset((bf->line + x + 1), '\0', bf->num_chars - x);
 					bf->next->num_chars = bf->num_chars - x - 1;
 					bf->num_chars = x + 1;
-					bf = bf->next;
 					clear();
 					loadwin(start, 0);
+					bf = bf->next;
 					move(++y, x = 0);
 
 
 				}
 				else if(x == bf->num_chars || x == bf->num_chars - 1){
 					bufInsert(bf);
-					bf = bf->next;
 					clear();
 					loadwin(start, 0);					
+					bf = bf->next;
 					move(++y, x = 0);
 				}
 				//addch('\n');
