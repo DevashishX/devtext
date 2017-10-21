@@ -158,9 +158,17 @@ void bufLoad(int fd, buffer *bf){
 void bufPrintAll(buffer *bf){
 
 	while(bf->next != NULL){
-		printf("line no: %d\t\t", bf->cur_line);
-		for(int i = 0; i < bf->num_chars; i++)
-			printf("%c", *(bf->line + i));
+		printf("line no: %d\t num_chars: %d\t\t", bf->cur_line, bf->num_chars);
+		for(int i = 0; i < bf->num_chars; i++){
+			if(*(bf->line + i) == '\0'){
+				printf("#");
+			}	
+			else{
+				printf("%c", *(bf->line + i));
+				
+			}	
+		}
+		
 		bf = bf->next;
 	}
 }
@@ -186,18 +194,18 @@ void lineInsert(buffer *bf, int loc, char ch){
 		(bf->num_chars)++;
 	}
 	else if(bf->num_chars == LINEMAX){
-		printf("LINE_FULL, num_chars: %d, loc: %d\n", bf->num_chars, loc);
+		//printf("LINE_FULL, num_chars: %d, loc: %d\n", bf->num_chars, loc);
 		return;
 	}
 }
 
 
-void lineRemove(buffer *bf, int loc, char ch){
+void lineRemove(buffer *bf, int loc){
 	if(loc == bf->num_chars - 1){
 		bf->line[loc] = '\0';
 		(bf->num_chars)--;
 	}
-	else if(bf->num_chars == 0){
+	else if(bf->num_chars == 1){
 		printf("LINE_EMPTY, num_chars: %d, loc: %d\n", bf->num_chars, loc);
 		return;
 	}

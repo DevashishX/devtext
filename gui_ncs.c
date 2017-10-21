@@ -21,10 +21,8 @@ void curses_init(){
 
 }
 
-void mvclearline(int y, int x, int lim){
-	for(int i = x; i < lim; i++){
-		mvaddch(y, x, ' ');
-	}
+void mvclearline(int y, int x){
+	mvprintw(y, x, "                                                           "); //poor implementation but the simplest
 	move(y, x);
 }
 

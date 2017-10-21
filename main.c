@@ -115,20 +115,54 @@ int main(int argc, char const *argv[]){
 					move(y, ++x);
 				}
 				break;
-			case KEY_BACKSPACE:
-				if(x > 0 && x < LINEMAX){
-					addch(' ');					
+			case KEY_BACKSPACE: //BACKSPACE IS HERE
+				bf->curX = x;
+				if(x > 0 && x < LINEMAX - 1 && x <= bf->num_chars - 1){
+					lineRemove(bf, bf->curX);
+					mvclearline(y, 0);
+					mvprintw(y, 0, "%s", bf->line);
 					move(y, --x);
+						
+					//addch(' ');					
 
 				}
-				else if(x == 0){
-					addch(' ');
+				else if(x == 0 && y > 0){
+					temp = bf->prev;
+
+					memmove((bf->prev->line + bf->prev->num_chars - 1), (bf->line), bf->num_chars - 1);
+					bf->next->prev = bf->prev;
+					bf->prev->next = bf->next;
+					bufDecr(bf->next, 1);
+					bf->prev->curX = bf->prev->num_chars;
+					bf->prev->num_chars = bf->prev->num_chars + bf->num_chars - 2;
+					move(--y, x = bf->prev->curX);
+					free(bf->line);
+					free(bf);
+					bf = temp;
+					clear();
+					loadwin(start, 0);
+					refresh();
+
+
+					/*lineRemove(bf, bf->curX);
+					mvclearline(y, x);
+					mvprintw(y, 0, "%s", bf->line);
+					move(y, 0);*/
+						
+					
+					
+				}
+				else if(x == 0 && y == 0){
+					move(0, 0);
+				}
+				else if(x == bf->num_chars - 1){
+					x--;
+
+					/*addch(' ');
 					if(y > 0){
 						move(--y, x);
-					}
+					}*/
 				}
-				
-					
 				break;
 			case KEY_HOME:
 				x = 0;
@@ -189,7 +223,7 @@ int main(int argc, char const *argv[]){
 				
 				break;
 			case KEY_F(2): //save
-				mvclearline(ht - 1, 0, 80);
+				mvclearline(ht - 1, 0);
 				if(newfl == 1){
 					attron(COLOR_PAIR(1));
 					mvprintw(ht - 1, 0, "Enter File name: ");
@@ -217,12 +251,33 @@ int main(int argc, char const *argv[]){
 			case KEY_F(4): //search replace
 				break;
 			case KEY_F(5): //save and quit
-				bufSave(fd, start);
+				mvclearline(ht - 1, 0);
+				if(newfl == 1){
+					attron(COLOR_PAIR(1));
+					mvprintw(ht - 1, 0, "Enter File name: ");
+					echo();
+					mvscanw(ht - 1, strlen("Enter File name: "), "%[^\n]s", filename);
+					noecho();
+					attroff(COLOR_PAIR(1));
+					fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+					newfl = 0;
+					clear();
+					if(start->prev != NULL)
+						start = start->prev;
+					attron(COLOR_PAIR(1));
+					mvprintw(ht - 1, 0, "row : %3d   |   col: %3d", y, x);
+					attroff(COLOR_PAIR(1));
+					refresh();
+					loadwin(start, 0);
+					move(y, x);
+
+				}
+			bufSave(fd, start);
 			case KEY_F(10):
 				delwin(local);
 				endwin();
 				close(fd);
-				bufPrintAll(bf);
+				bufPrintAll(start);
 				bufDestroy(bf);
 				return 0;
 				break;
@@ -251,7 +306,7 @@ int main(int argc, char const *argv[]){
 
 		}
 		attron(COLOR_PAIR(1));
-		mvprintw(ht - 1, 0, "row : %3d   |   col: %3d", y, x);
+		mvprintw(ht - 1, 0, "row : %3d | col: %3d | nc: %3d | cl: %3d ", y, x, bf->num_chars, bf->cur_line);
 		move(y, x);
 		attroff(COLOR_PAIR(1));
 		refresh();
