@@ -32,8 +32,9 @@ int main(int argc, char const *argv[]){
 	}
 	else{
 		printf("USAGE: ./devtext <filename> or ./devtext\n");
+		bufDestroy(bf);
 		free(bf);
-		exit(0);
+		return 0;
 	}
 
 
@@ -61,8 +62,10 @@ int main(int argc, char const *argv[]){
 	refresh();
 	getch();
 	clear();
+	attron(COLOR_PAIR(1));
 	mvprintw(ht - 1, 0, "row : %3d   |   col: %3d", y, x);
 	move(y, x);
+	attroff(COLOR_PAIR(1));
 	refresh();
 
 	start = bf;
@@ -186,18 +189,25 @@ int main(int argc, char const *argv[]){
 				
 				break;
 			case KEY_F(2): //save
-				mvclearline(ht - 1, 0, wd - 1);
+				mvclearline(ht - 1, 0, 80);
 				if(newfl == 1){
+					attron(COLOR_PAIR(1));
 					mvprintw(ht - 1, 0, "Enter File name: ");
 					echo();
-					mvscanw(ht - 1, strlen("Enter File name: "), "%s", filename);
+					mvscanw(ht - 1, strlen("Enter File name: "), "%[^\n]s", filename);
 					noecho();
+					attroff(COLOR_PAIR(1));
 					fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 					newfl = 0;
-					bf = start;
 					clear();
+					if(start->prev != NULL)
+						start = start->prev;
+					attron(COLOR_PAIR(1));
+					mvprintw(ht - 1, 0, "row : %3d   |   col: %3d", y, x);
+					attroff(COLOR_PAIR(1));
+					refresh();
 					loadwin(start, 0);
-					move(0, 0);
+					move(y, x);
 
 				}
 				bufSave(fd, start);
@@ -209,11 +219,12 @@ int main(int argc, char const *argv[]){
 			case KEY_F(5): //save and quit
 				bufSave(fd, start);
 			case KEY_F(10):
-				bufDestroy(bf);
 				delwin(local);
 				endwin();
 				close(fd);
-				exit(0);
+				bufPrintAll(bf);
+				bufDestroy(bf);
+				return 0;
 				break;
 			default:
 				if(x >= 0 && x < LINEMAX){
@@ -239,8 +250,10 @@ int main(int argc, char const *argv[]){
 
 
 		}
+		attron(COLOR_PAIR(1));
 		mvprintw(ht - 1, 0, "row : %3d   |   col: %3d", y, x);
 		move(y, x);
+		attroff(COLOR_PAIR(1));
 		refresh();
 
 

@@ -86,7 +86,7 @@ void bufSave(int fd, buffer *bf){
 		INFO;
 		perror("lseek error: ");
 	}
-	while(bf->next != NULL){
+	while(bf != NULL){
 		if(write(fd, bf->line, bf->num_chars) == -1){
 			INFO;
 			perror("Write error: ");
