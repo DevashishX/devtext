@@ -30,7 +30,7 @@ void bufInit(buffer *bf){
 
 }
 
-void bufCreateNext(buffer *bf){ //when next buffer is null
+void bufCreateNext(buffer *bf){ //when next buffer is null CREATE NEW
 	bf->next = (buffer *)malloc(sizeof(buffer) * 1);
 	bf->next->prev = bf;
 	bf->next->next = NULL;

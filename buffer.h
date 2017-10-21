@@ -16,7 +16,7 @@
 #define LINEMAX 80
 #define TRUE 1
 #define FALSE 0
-//int lines = 0;
+
 
 
 typedef struct buffer{

@@ -306,7 +306,7 @@ int main(int argc, char const *argv[]){
 
 		}
 		attron(COLOR_PAIR(1));
-		mvprintw(ht - 1, 0, "row : %3d | col: %3d | nc: %3d | cl: %3d ", y, x, bf->num_chars, bf->cur_line);
+		mvprintw(ht - 1, 0, "row : %3d | cl: %3d | col: %3d | nc: %3d ", y, bf->cur_line, x, bf->num_chars );
 		move(y, x);
 		attroff(COLOR_PAIR(1));
 		refresh();
