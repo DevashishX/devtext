@@ -2,11 +2,17 @@
 
 
 >Current Progress:
+
 >arrow keys work
+
 >enter works
+
 >backspace partially works
+
 >save works
+
 >pageup, pagedown, search, replace, copy-paste, undo doesnt work
+
 
 
 ### Devtext has the following Features:
