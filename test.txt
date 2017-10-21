@@ -8,9 +8,7 @@
 8N
 9E
 10last line
+
 this is 11
-asdasd
-asdad
-adasd
-12?ahe ka
+
 13
