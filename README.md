@@ -12,11 +12,7 @@
 
 * Use of Curser Keys to Navigate 
 
-* Undo and Redo
-
 * Find and Replace
-
-* Syntax Highlighting
 
 * Pageup and Pagedown
 
