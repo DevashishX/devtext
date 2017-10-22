@@ -1,19 +1,10 @@
 #ifndef BUFFER_H
 #define BUFFER_H 
 
-
-/*#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>*/
 #include <sys/time.h>
 
 #define INFO printf("\nline %d : %s : %s\n", __LINE__, __FILE__, __func__)
-#define LINEMAX 120
+#define LINEMAX 80
 #define TRUE 1
 #define FALSE 0
 
@@ -57,7 +48,7 @@ buffer* lineRemove(buffer *bf, int y, int x);
 int lineSearch(char *search);
 int lineReplace(char *search, char *replace);
 
-void lineInit(buffer *bf); //done
+void lineInit(buffer *bf);
 void linePrint(buffer *bf);
 int lineFull(buffer *bf);
 int lineEmpty(buffer *bf);
@@ -65,6 +56,6 @@ int lineEmpty(buffer *bf);
 void bufIncr(buffer *bf, int val);
 void bufDecr(buffer *bf, int val);
 
-//int fileexist(char const *path);
+
 
 #endif

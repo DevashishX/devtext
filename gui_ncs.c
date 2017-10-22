@@ -8,9 +8,8 @@ void curses_init(){
     initscr();
     noecho();                   
     cbreak();
-    curs_set(2);
+    curs_set(1);
     start_color();
-    //scrollok(stdscr, TRUE);
     init_pair(0, COLOR_WHITE, COLOR_BLACK);
     init_pair(1, COLOR_CYAN, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
@@ -21,13 +20,14 @@ void curses_init(){
 
 }
 
-void mvclearline(int y, int x){
+/*void mvclearline(int y, int x){
 	mvprintw(y, x, "                                                           "); //poor implementation but the simplest and works
 	move(y, x);
 }
-
+*/
 void loadwin(buffer *bf, int y){
 	clear();
+	//attron(COLOR_PAIR(2));
 	int x = 0;
 	while(bf != NULL){
 		mvprintw(y, x, "%s", bf->line);

@@ -116,10 +116,8 @@ void bufLoad(int fd, buffer *bf){
 				bf->line[i] = ch;
 				bf->cur_line = linenum;
 				bf->num_chars = i+1;
-				//printf("$$$$: %d\n", bf->cur_line);
 				bf = bf->next;
 				linenum++;
-				//printf("$$$$: %d\n", bf->cur_line);
 				i = 0;
 				continue;
 			}
@@ -137,10 +135,8 @@ void bufLoad(int fd, buffer *bf){
 			bf->line[i] = ch;
 			bf->cur_line = linenum;
 			bf->num_chars = i+1;
-			//printf("####: %d\n", bf->cur_line);
 			bf = bf->next;
 			linenum++;
-			//printf("####: %d\n", bf->cur_line);
 			i = 0;
 			continue;
 
@@ -174,11 +170,6 @@ void bufPrintAll(buffer *bf){
 	}
 }
 
-/*int cur_line;
-int num_chars;
-int curX;
-*/
-
 void lineInsert(buffer *bf, int loc, char ch){
 
 	if(loc == bf->num_chars){
@@ -195,68 +186,9 @@ void lineInsert(buffer *bf, int loc, char ch){
 		(bf->num_chars)++;
 	}
 	else if(bf->num_chars == LINEMAX){
-		//printf("LINE_FULL, num_chars: %d, loc: %d\n", bf->num_chars, loc);
 		return;
 	}
 }
-
-
-/*buffer* lineRemove(buffer *bf, int y, int x){
-	buffer *temp;
-	temp = bf->prev;
-	if(x == 0 && y ==0){
-		return bf;
-	}
-	else if(x > 0 && x < bf->num_chars){
-		mvdelch(y, x - 1);
-		memmove((bf->line + x - 1), (bf->line + x), bf->num_chars - x);
-		(bf->num_chars)--;
-		return bf;
-
-	}
-	else if(x == 0){
-		if(bf->prev != NULL && bf->prev->num_chars == 0){
-			bf->prev->num_chars = 1;
-		}
-		memmove((bf->prev->line + bf->prev->num_chars - 1), bf->line, (bf->num_chars - 1));
-		bf->prev->next = bf->next;
-		bf->next->prev = bf->prev;
-		x = bf->num_chars - 1;
-		if(bf->prev->num_chars == 1 && bf->num_chars == 1){
-			bf->prev->num_chars = 1;
-		}
-		else{
-			bf->prev->num_chars = bf->prev->num_chars + bf->num_chars - 2;
-		}
-		
-		free(bf->line);
-		free(bf);
-		bf = temp;
-		return bf;
-
-
-	}*/
-
-
-
-
-
-/*
-	if(loc == bf->num_chars - 1){
-		bf->line[loc] = '\0';
-		(bf->num_chars)--;
-	}
-	else if(bf->num_chars == 1){
-		printf("LINE_EMPTY, num_chars: %d, loc: %d\n", bf->num_chars, loc);
-		return;
-	}
-	else if(bf->num_chars <= LINEMAX && bf->num_chars > 0){
-		memmove((bf->line + loc), (bf->line + loc + 1), bf->num_chars - loc - 1);
-		bf->line[bf->num_chars - 1] = '\0';
-		(bf->num_chars)--;
-	}
-
-}*/
 
 void bufDecr(buffer *bf, int val){
 	while(bf->next != NULL){
@@ -273,44 +205,6 @@ void bufIncr(buffer *bf, int val){
 	}
 	(bf->cur_line)++;
 }
-
-
-
-
-
-/*void bufSearch(buffer *bf, char *search){
-	char *found;
-	while(1){
-		found = strstr(bf->line, search);
-		if(found == NULL && bf->next != NULL){
-			bf = bf->next;
-		}
-	}
-	if(found == NULL)
-		return NULL;
-	else{
-
-		return found;
-	}
-
-
-}*/
-
-/*int main(int argc, char const *argv[])
-{
-	buffer bf1;
-	printf("hi\n");
-	int fd = open("test.txt", O_RDWR | O_CREAT , S_IRWXU);
-	bufLoad(fd, &bf1);
-	bufPrintAll(&bf1);
-	bufSave(fd, &bf1);
-	close(fd);
-	bufDestroy(&bf1);
-	printf("\nBUfend\n");
-	return 0;
-}*/
-
-
 
 /*int bufInit(buffer *bf); ///done
 void bufDestroy(buffer *bf);//done
