@@ -10,7 +10,7 @@ void curses_init(){
     cbreak();
     curs_set(2);
     start_color();
-    scrollok(stdscr, TRUE);
+    //scrollok(stdscr, TRUE);
     init_pair(0, COLOR_WHITE, COLOR_BLACK);
     init_pair(1, COLOR_CYAN, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
@@ -27,13 +27,14 @@ void mvclearline(int y, int x){
 }
 
 void loadwin(buffer *bf, int y){
+	clear();
 	int x = 0;
 	while(bf != NULL){
 		mvprintw(y, x, "%s", bf->line);
 		y++;
 		bf = bf->next;
 	}
-	move(y, 0);
+
 	refresh();
 }
 

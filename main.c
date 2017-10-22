@@ -27,7 +27,7 @@ int main(int argc, char const *argv[]){
 	int x = 0, y = 0, offX = 0, offY = 0, ch;
 	char str[LINEMAX], filename[255];
 	memset(filename, '\0', 255);
-	buffer *bf, *start, *temp;
+	buffer *bf, *start, *temp, *head;
 	bf = (buffer *)malloc(sizeof(buffer));
 	bufInit(bf);
 	if(argc == 2){
@@ -93,6 +93,7 @@ int main(int argc, char const *argv[]){
 
 
 	start = bf;
+	head = bf;
 	loadwin(start, 0);
 	move(0, 0);
 	while((ch = getch())){
@@ -109,9 +110,15 @@ int main(int argc, char const *argv[]){
 						move(--y, x);
 					}
 				}
+				else  if( y == 0 && start->prev != NULL && bf->prev != NULL){
+					start = start->prev;
+					bf = bf->prev;
+					loadwin(start, 0);
+					move(y, x);
+				}
 				break;
 			case KEY_DOWN:
-				if(y < ht - 1 && bf != NULL){
+				if(y < ht - 2 && bf != NULL){
 					if(bf->next != NULL){
 						bf = bf->next;
 						if(x >= bf->num_chars){
@@ -128,6 +135,12 @@ int main(int argc, char const *argv[]){
 						}
 					}
 				}
+				else if( y == ht - 2 && bf->next != NULL && start->next != NULL){
+					start = start->next;
+					bf = bf->next;
+					loadwin(start, 0);
+					move(y, x);
+				}
 				break;
 			case KEY_LEFT:
 				if(x > 0){
@@ -141,7 +154,10 @@ int main(int argc, char const *argv[]){
 				break;
 			case KEY_BACKSPACE: //BACKSPACE IS HERE
 				bf->curX = x;
-				temp = bf->prev;
+				if(bf->prev != NULL){
+					temp = bf->prev;
+					
+				}
 				if(x == 0 && y ==0){
 					move(0, 0);
 				}
@@ -151,12 +167,16 @@ int main(int argc, char const *argv[]){
 					(bf->num_chars)--;
 					x--;
 					bf->curX = x;
-					//clear();
-					move(y, 0);
-					clrtoeol();
-					mvprintw(y, 0, "%s", bf->line);
 					loadwin(start, 0);
+					//clrtoeol();
+					/*for(int i = 0; i < bf->num_chars - 1; i++){
+						mvaddch(y, i, *(bf->line + i));
+					}
+					mvaddch(y, bf->num_chars, ' ');
+					//mvprintw(y, 0, "%s", bf->line);
+					*/
 					move(y, x);
+					refresh();
 
 
 				}
@@ -185,9 +205,21 @@ int main(int argc, char const *argv[]){
 						bufDecr(bf->next, 1);
 						
 					}
-					clear();
-					loadwin(start, 0);	
-					move(--y, bf->curX = x = bf->num_chars - x - 1);
+					if(y == 0 && bf->prev != NULL && start->prev != NULL){
+						start = bf;
+						//bf = bf->prev;
+						offY--;
+						loadwin(start, 0);
+						move(y, bf->curX = x = bf->num_chars - x - 1);
+					}
+					else{
+						if(y == 0)
+							y = 0;
+						else
+							y--;
+						move(y, bf->curX = x = bf->num_chars - x - 1);
+						loadwin(start, 0);	
+					}
 				}
 
 				/*if(x > 0 && x < LINEMAX - 1 && x < bf->num_chars - 1){
@@ -250,10 +282,18 @@ int main(int argc, char const *argv[]){
 					memset((bf->line + x + 1), '\0', bf->num_chars - x);
 					bf->next->num_chars = bf->num_chars - x - 1;
 					bf->num_chars = x + 1;
-					clear();
-					loadwin(start, 0);
 					bf = bf->next;
-					move(++y, x = 0);
+					if(y < ht - 2)
+						move(++y, x = 0);
+					else{
+						if(start->next != NULL){
+							start = start->next;
+							offY++;
+						}
+
+						move(y = ht - 2, x = 0);
+					}
+					loadwin(start, 0);
 
 
 				}
@@ -262,7 +302,17 @@ int main(int argc, char const *argv[]){
 					clear();
 					loadwin(start, 0);					
 					bf = bf->next;
-					move(++y, x = 0);
+					if(y < ht - 2)
+						move(++y, x = 0);
+					else{
+						if(start->next != NULL){
+							start = start->next;
+							offY++;
+						}
+
+						move(y = ht - 2, x = 0);
+					}
+					loadwin(start, 0);
 				}
 				//addch('\n');
 				//bufInsert(bf);
@@ -281,7 +331,8 @@ int main(int argc, char const *argv[]){
 				
 				break;
 			case KEY_F(2): //save
-				clrtoeol(ht - 1, 0);
+				move(ht -1, 0);
+				clrtoeol();
 				if(newfl == 1){
 					attron(COLOR_PAIR(1));
 					mvprintw(ht - 1, 0, "Enter file Name: ");
@@ -305,7 +356,7 @@ int main(int argc, char const *argv[]){
 				else{
 					fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 				}
-				bufSave(fd, start);
+				bufSave(fd, head);
 				break;
 			case KEY_F(3): //search
 				break;
@@ -336,18 +387,18 @@ int main(int argc, char const *argv[]){
 				else{
 					fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 				}
-				bufSave(fd, start);
+				bufSave(fd, head);
 			case KEY_F(10):
 				delwin(local);
 				endwin();
 				close(fd);
 				printf("%s\n", filename);
-				bufPrintAll(start);
-				bufDestroy(start);
+				bufPrintAll(head);
+				bufDestroy(head);
 				return 0;
 				break;
 			default:
-				if(x >= 0 && x < LINEMAX){
+				if(x >= 0 && x < LINEMAX && bf->num_chars != LINEMAX){
 					//mvaddch(y, x, ch);
 					bf->curX = x;
 					if(x < LINEMAX - 4 && ch == '\t'){
@@ -361,8 +412,11 @@ int main(int argc, char const *argv[]){
 							ch = ' ';
 						lineInsert(bf, bf->curX, ch);						
 					}
-					mvprintw(y, 0, "%s", bf->line);
-					if(x == LINEMAX - 1){
+					clear();
+					loadwin(start, 0);
+					//mvprintw(y, 0, "%s", bf->line);
+					refresh();
+					if(bf->num_chars == LINEMAX - 1 || x == LINEMAX - 1){
 						x = LINEMAX - 1;
 					}
 					else {
@@ -399,6 +453,6 @@ int main(int argc, char const *argv[]){
 	delwin(local);
 	endwin();
 	close(fd);
-	bufDestroy(bf);
+	bufDestroy(head);
 	return 0;
 }

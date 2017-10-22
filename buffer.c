@@ -189,7 +189,7 @@ void lineInsert(buffer *bf, int loc, char ch){
 		bf->line[0] = ch;
 		(bf->num_chars)++;
 	}
-	else if(bf->num_chars < LINEMAX && bf->num_chars > 0){
+	else if(bf->num_chars < LINEMAX && bf->num_chars > 0 && loc != LINEMAX && loc != LINEMAX - 1){
 		memmove((bf->line + loc + 1), (bf->line + loc), bf->num_chars - loc);
 		bf->line[loc] = ch;
 		(bf->num_chars)++;
@@ -201,7 +201,7 @@ void lineInsert(buffer *bf, int loc, char ch){
 }
 
 
-buffer* lineRemove(buffer *bf, int y, int x){
+/*buffer* lineRemove(buffer *bf, int y, int x){
 	buffer *temp;
 	temp = bf->prev;
 	if(x == 0 && y ==0){
@@ -235,7 +235,7 @@ buffer* lineRemove(buffer *bf, int y, int x){
 		return bf;
 
 
-	}
+	}*/
 
 
 
@@ -254,9 +254,9 @@ buffer* lineRemove(buffer *bf, int y, int x){
 		memmove((bf->line + loc), (bf->line + loc + 1), bf->num_chars - loc - 1);
 		bf->line[bf->num_chars - 1] = '\0';
 		(bf->num_chars)--;
-	}*/
+	}
 
-}
+}*/
 
 void bufDecr(buffer *bf, int val){
 	while(bf->next != NULL){
