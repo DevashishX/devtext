@@ -6,7 +6,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/time.h>
 #include <ncurses.h>
 
 #include "gui_ncs.h"
@@ -25,10 +24,11 @@ int main(int argc, char const *argv[]){
 	int ht, wd;
 	int srchflag = 0;
 	int x = 0, y = 0, offY = 0, ch;
-	char str[LINEMAX], rstr[LINEMAX], filename[255], *srch;
+	char str[LINEMAX], rstr[LINEMAX], filename[255], *srch, copybuf[LINEMAX];
 	memset(filename, '\0', 255);
 	memset(str, '\0', LINEMAX);
 	memset(rstr, '\0', LINEMAX);
+	memset(copybuf, '\0', LINEMAX);
 	buffer *bf, *start, *temp, *temp2, *head;
 	bf = (buffer *)malloc(sizeof(buffer));
 	bufInit(bf);
@@ -74,11 +74,12 @@ int main(int argc, char const *argv[]){
 	attron(COLOR_PAIR(1));
 	mvprintw(ht/2 - 3, wd/2 - (strlen("WELCOME TO DEVTEXT")/2), "WELCOME TO DEVTEXT");
 	attron(COLOR_PAIR(2));
-	mvprintw(ht/2 - 2, wd/2 - (strlen("F2: SAVE F3: SEARCH")/2), "F2: SAVE F3: SEARCH");
-	mvprintw(ht/2 - 1, wd/2 - (strlen("F4: SEARCH & REPLACE")/2), "F4: SEARCH & REPLACE");
-	mvprintw(ht/2 + 0, wd/2 - (strlen("F5: SAVE & QUIT F10: QUIT NOSAVE")/2), "F5: SAVE & QUIT F10: QUIT NOSAVE");
-	mvprintw(ht/2 + 1, wd/2 - (strlen("WINDOW SIZE:     X    ")/2), "WINDOW SIZE: %3d X %3d", ht, wd); 
-	mvprintw(ht/2 + 2, wd/2 - (strlen("PRESS ANY KEY TO CONTINUE")/2), "PRESS ANY KEY TO CONTINUE", ht, wd);
+	mvprintw(ht/2 - 2, wd/2 - (strlen("F2: SAVE F3: SAVE AND QUIT")/2), "F2: SAVE F3: SAVE AND QUIT");
+	mvprintw(ht/2 - 1, wd/2 - (strlen("F4: QUIT WITHOUT SAVE")/2), "F4: QUIT WITHOUT SAVE");
+	mvprintw(ht/2 - 0, wd/2 - (strlen("F5: SEARCH F6: REPLACE")/2), "F5: SEARCH F6: REPLACE");
+	mvprintw(ht/2 + 1, wd/2 - (strlen("F9: HELP")/2), "F9: HELP");
+	mvprintw(ht/2 + 2, wd/2 - (strlen("WINDOW SIZE:     X    ")/2), "WINDOW SIZE: %3d X %3d", ht, wd); 
+	mvprintw(ht/2 + 3, wd/2 - (strlen("PRESS ANY KEY TO CONTINUE")/2), "PRESS ANY KEY TO CONTINUE", ht, wd);
 	attroff(COLOR_PAIR(3));
 	y = 0, x = 0;
 	move(y, x);
@@ -102,7 +103,7 @@ int main(int argc, char const *argv[]){
 	while((ch = getch())){
 
 		switch (ch){
-			case KEY_UP:
+			case KEY_UP: //up arrow
 				if(y > 0 && bf != NULL && bf->prev != NULL){
 					bf = bf->prev;
 					if(x >= bf->num_chars){
@@ -120,7 +121,7 @@ int main(int argc, char const *argv[]){
 					move(y, x);
 				}
 				break;
-			case KEY_DOWN:
+			case KEY_DOWN: //down arrow
 				if(y < ht - 2 && bf != NULL){
 					if(bf->next != NULL){
 						bf = bf->next;
@@ -145,17 +146,17 @@ int main(int argc, char const *argv[]){
 					move(y, x);
 				}
 				break;
-			case KEY_LEFT:
+			case KEY_LEFT: //left arrow
 				if(x > 0){
 					move(y, --x);
 				}
 				break;
-			case KEY_RIGHT:
+			case KEY_RIGHT: //right arrow
 				if(x < LINEMAX - 1 && x < bf->num_chars - 1){
 					move(y, ++x);
 				}
 				break;
-			case KEY_BACKSPACE: //BACKSPACE IS HERE
+			case KEY_BACKSPACE: //BACKSPACE key
 				bf->curX = x;
 				if(bf->prev != NULL){
 					temp = bf->prev;
@@ -303,15 +304,12 @@ int main(int argc, char const *argv[]){
 					mvscanw(ht - 1, strlen("Enter file Name: "), "%[^\n]s", filename);
 					noecho();
 					attroff(COLOR_PAIR(1));
-					fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
-					newfl = 0;
-					clear();
-					if(start->prev != NULL)
-						start = start->prev;
-					attron(COLOR_PAIR(1));
-					mvprintw(ht - 1, 0, "row : %3d   |   col: %3d", y, x);
-					attroff(COLOR_PAIR(1));
 					refresh();
+					if((fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU)) == -1){
+						perror("Save Error: ");
+						return 0;
+					}
+					newfl = 0;
 					loadwin(start, 0);
 					move(y, x);
 
@@ -320,8 +318,9 @@ int main(int argc, char const *argv[]){
 					fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 				}
 				bufSave(fd, head);
+
 				break;
-			case KEY_F(3): //search
+			case KEY_F(5): //search
 				temp2 = head;
 				attron(COLOR_PAIR(1));
 				move(ht - 1, 0);
@@ -388,7 +387,7 @@ int main(int argc, char const *argv[]){
 				}
 				srchflag = 0;
 				break;
-			case KEY_F(4): //search replace
+			case KEY_F(6): //search replace
 				temp2 = head;
 				attron(COLOR_PAIR(1));
 				move(ht - 1, 0);
@@ -473,7 +472,7 @@ int main(int argc, char const *argv[]){
 				srchflag = 0;
 				
 				break;
-			case KEY_F(5): //save and quit
+			case KEY_F(3): //save and quit
 				move(ht - 1, 0);
 				clrtoeol();
 				if(newfl == 1){
@@ -483,14 +482,10 @@ int main(int argc, char const *argv[]){
 					mvscanw(ht - 1, strlen("Enter File name: "), "%[^\n]s", filename);
 					noecho();
 					attroff(COLOR_PAIR(1));
-					fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
-					newfl = 0;
-					clear();
-					if(start->prev != NULL)
-						start = start->prev;
-					attron(COLOR_PAIR(1));
-					mvprintw(ht - 1, 0, "row : %3d   |   col: %3d", y, x);
-					attroff(COLOR_PAIR(1));
+					if((fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU)) == -1){
+						perror("Save Error: ");
+						return 0;
+					}
 					refresh();
 					loadwin(start, 0);
 					move(y, x);
@@ -500,14 +495,29 @@ int main(int argc, char const *argv[]){
 					fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 				}
 				bufSave(fd, head);
-			case KEY_F(10):
+			case KEY_F(4):
 				delwin(local);
 				endwin();
 				close(fd);
-				printf("%s\n", filename);
-				bufPrintAll(head);
+				/*printf("%s\n", filename);
+				bufPrintAll(head);*/
 				bufDestroy(head);
 				return 0;
+				break;
+			case KEY_F(9):
+				clear();
+				attron(COLOR_PAIR(1));
+				mvprintw(ht/2 - 3, wd/2 - (strlen("WELCOME TO DEVTEXT")/2), "WELCOME TO DEVTEXT");
+				attron(COLOR_PAIR(2));
+				mvprintw(ht/2 - 2, wd/2 - (strlen("F2: SAVE F3: SAVE AND QUIT")/2), "F2: SAVE F3: SAVE AND QUIT");
+				mvprintw(ht/2 - 1, wd/2 - (strlen("F4: QUIT WITHOUT SAVE")/2), "F4: QUIT WITHOUT SAVE");
+				mvprintw(ht/2 - 0, wd/2 - (strlen("F5: SEARCH F6: REPLACE")/2), "F5: SEARCH F6: REPLACE");
+				mvprintw(ht/2 + 1, wd/2 - (strlen("F9: HELP")/2), "F9: HELP");
+				mvprintw(ht/2 + 2, wd/2 - (strlen("WINDOW SIZE:     X    ")/2), "WINDOW SIZE: %3d X %3d", ht, wd); 
+				mvprintw(ht/2 + 3, wd/2 - (strlen("PRESS ANY KEY TO CONTINUE")/2), "PRESS ANY KEY TO CONTINUE", ht, wd);
+				attroff(COLOR_PAIR(2));
+				getch();
+				loadwin(start, 0);
 				break;
 			default:
 				if(x >= 0 && x < LINEMAX && bf->num_chars != LINEMAX){
@@ -525,7 +535,6 @@ int main(int argc, char const *argv[]){
 					}
 					clear();
 					loadwin(start, 0);
-					//mvprintw(y, 0, "%s", bf->line);
 					refresh();
 					if(bf->num_chars == LINEMAX - 1 || x == LINEMAX - 1){
 						x = LINEMAX - 1;
@@ -549,7 +558,7 @@ int main(int argc, char const *argv[]){
 		attron(COLOR_PAIR(1));
 		move(ht -1, 0);
 		clrtoeol();
-		mvprintw(ht - 1, 0, "%s row : %3d | cl: %3d | col: %3d | nc: %3d ", filename, y, bf->cur_line, x, bf->num_chars );
+		mvprintw(ht - 1, 0, "%s | row : %3d | col: %3d", filename, y, x);
 		move(y, x);
 		attroff(COLOR_PAIR(1));
 		refresh();

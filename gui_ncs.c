@@ -20,11 +20,7 @@ void curses_init(){
 
 }
 
-/*void mvclearline(int y, int x){
-	mvprintw(y, x, "                                                           "); //poor implementation but the simplest and works
-	move(y, x);
-}
-*/
+
 void loadwin(buffer *bf, int y){
 	clear();
 	//attron(COLOR_PAIR(2));

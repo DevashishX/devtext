@@ -10,7 +10,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/time.h>
 
 void lineInit(buffer *bf){
 	bf->line = (char *)malloc(sizeof(char) * LINEMAX);
@@ -23,11 +22,6 @@ void bufInit(buffer *bf){
 	bf->prev = NULL;
 	bf->cur_line = 0;
 	bf->num_chars = 0;
-	if(gettimeofday(&(bf->mod_time), NULL) == -1){
-		INFO;
-		perror("Time&Date Error: ");
-		
-	}
 	lineInit(bf);
 
 }
@@ -39,10 +33,6 @@ void bufCreateNext(buffer *bf){ //when next buffer is null CREATE NEW
 	bf->next->cur_line = bf->cur_line + 1;
 	bf = bf->next;
 	bf->num_chars = 0;
-	if(gettimeofday(&(bf->mod_time), NULL) == -1){
-		INFO;
-		perror("Time&Date Error: ");
-	}
 	lineInit(bf);
 
 }
@@ -61,10 +51,6 @@ void bufInsert(buffer *bf){ //insert b/w bf and bf->next buffers
 	bf->next = temp;
 	bf->next->cur_line = bf->cur_line + 1;
 	bf->next->num_chars = 0;
-	if(gettimeofday(&(bf->next->mod_time), NULL) == -1){
-		INFO;
-		perror("Time&Date Error: ");
-	}
 	lineInit(bf->next);
 
 }

@@ -1,7 +1,6 @@
 #ifndef BUFFER_H
 #define BUFFER_H 
 
-#include <sys/time.h>
 
 #define INFO printf("\nline %d : %s : %s\n", __LINE__, __FILE__, __func__)
 #define LINEMAX 80
@@ -17,17 +16,13 @@ typedef struct buffer{
 	int cur_line;
 	int num_chars;
 	int curX;
-
-	int ch_mark[10];
-	struct timeval mod_time;
-
 	char *line;
 
 
 
 }buffer;
 
-void bufInit(buffer *bf); ///done
+void bufInit(buffer *bf);
 void bufDestroy(buffer *bf);
 
 void bufSave(int fd, buffer *bf);
@@ -55,7 +50,6 @@ int lineEmpty(buffer *bf);
 
 void bufIncr(buffer *bf, int val);
 void bufDecr(buffer *bf, int val);
-
 
 
 #endif

@@ -13,7 +13,11 @@
 
 >save works
 
->pageup, pagedown, search, replace, copy-paste, undo doesnt work
+>pageup, pagedown work
+
+>search, replace work
+
+>copy-paste doesnt work
 
 
 
