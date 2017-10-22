@@ -9,7 +9,7 @@
 
 >enter works
 
->backspace partially works
+>backspace works
 
 >save works
 
