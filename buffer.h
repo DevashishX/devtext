@@ -65,4 +65,6 @@ int lineEmpty(buffer *bf);
 void bufIncr(buffer *bf, int val);
 void bufDecr(buffer *bf, int val);
 
+//int fileexist(char const *path);
+
 #endif

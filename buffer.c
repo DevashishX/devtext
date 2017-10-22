@@ -239,6 +239,8 @@ buffer* lineRemove(buffer *bf, int y, int x){
 
 
 
+
+
 /*
 	if(loc == bf->num_chars - 1){
 		bf->line[loc] = '\0';
