@@ -7,8 +7,9 @@
 void curses_init(){
     initscr();
     noecho();                   
-    cbreak();
-    curs_set(1);
+    //cbreak();
+    raw();
+    curs_set(2);
     start_color();
     init_pair(0, COLOR_WHITE, COLOR_BLACK);
     init_pair(1, COLOR_CYAN, COLOR_BLACK);
