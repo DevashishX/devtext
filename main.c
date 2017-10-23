@@ -23,7 +23,7 @@ int main(int argc, char const *argv[]){
 	int fd, newfl = 0;
 	int ht, wd;
 	int srchflag = 0;
-	int x = 0, y = 0, offY = 0, ch, xstate = 0, cpyi = 0;
+	int x = 0, y = 0, offY = 0, ch, xstate = 0, cpyi = 0, colr = 0;
 	char str[LINEMAX], rstr[LINEMAX], filename[255], *srch, copybuf[LINEMAX];
 	memset(filename, '\0', 255);
 	memset(str, '\0', LINEMAX);
@@ -70,38 +70,41 @@ int main(int argc, char const *argv[]){
 	keypad(stdscr, true);
 	/* HELP MENU */
 	attron(COLOR_PAIR(1));
-	mvprintw(ht/2 - 6, wd/2 - (strlen("WELCOME TO DEVTEXT")/2), "WELCOME TO DEVTEXT");
+	mvprintw(ht/2 - 7, wd/2 -  17, "WELCOME TO DEVTEXT");
+	attroff(COLOR_PAIR(1));
 	attron(COLOR_PAIR(2));
-	mvprintw(ht/2 - 5, wd/2 - (strlen("CTRL+S OR F2 : SAVE")/2), "CTRL+S OR F2 : SAVE");
-	mvprintw(ht/2 - 4, wd/2 - (strlen("CTRL+A OR F3 : SAVE AND QUIT")/2), "CTRL+A OR F3 : SAVE AND QUIT");
-	mvprintw(ht/2 - 3, wd/2 - (strlen("CTRL+Q OR F4 : QUIT WITHOUT SAVE")/2), "CTRL+Q OR F4 : QUIT WITHOUT SAVE");
-	mvprintw(ht/2 - 2, wd/2 - (strlen("CTRL+F OR F5 : SEARCH")/2), "CTRL+F OR F5 : SEARCH");
-	mvprintw(ht/2 - 1, wd/2 - (strlen("CTRL+R OR F6 : SEARCH AND REPLACE")/2), "CTRL+R OR F6 : SEARCH AND REPLACE");
-	mvprintw(ht/2 - 0, wd/2 - (strlen("CTRL+X OR F7 : CUT")/2), "CTRL+X OR F7 : CUT");
-	mvprintw(ht/2 + 1, wd/2 - (strlen("CTRL+C OR F8 : COPY")/2), "CTRL+C OR F8 : COPY");
-	mvprintw(ht/2 + 2, wd/2 - (strlen("CTRL+V OR F9 : PASTE")/2), "CTRL+V OR F9 : PASTE");
-	mvprintw(ht/2 + 3, wd/2 - (strlen("CTRL+H OR F10 : SHOW HELP WINDOW")/2), "CTRL+H OR F10 : SHOW HELP WINDOW");
-	mvprintw(ht/2 + 4, wd/2 - (strlen("WINDOW SIZE:     X    ")/2), "WINDOW SIZE: %3d X %3d", wd, ht); 
-	mvprintw(ht/2 + 5, wd/2 - (strlen("PRESS ANY KEY TO CONTINUE")/2), "PRESS ANY KEY TO CONTINUE");
-	attroff(COLOR_PAIR(3));
+	mvprintw(ht/2 - 5, wd/2 - 17, "CTRL+S OR F2 :  SAVE");
+	mvprintw(ht/2 - 4, wd/2 - 17, "CTRL+A OR F3 :  SAVE AND QUIT");
+	mvprintw(ht/2 - 3, wd/2 - 17, "CTRL+Q OR F4 :  QUIT WITHOUT SAVE");
+	mvprintw(ht/2 - 2, wd/2 - 17, "CTRL+F OR F5 :  SEARCH");
+	mvprintw(ht/2 - 1, wd/2 - 17, "CTRL+R OR F6 :  SEARCH AND REPLACE");
+	mvprintw(ht/2 - 0, wd/2 - 17, "CTRL+X OR F7 :  CUT");
+	mvprintw(ht/2 + 1, wd/2 - 17, "CTRL+C OR F8 :  COPY");
+	mvprintw(ht/2 + 2, wd/2 - 17, "CTRL+V OR F9 :  PASTE");
+	mvprintw(ht/2 + 3, wd/2 - 17, "CTRL+N       :  CHANGE TEXT COLOR");
+	mvprintw(ht/2 + 4, wd/2 - 17, "CTRL+H OR F10 : SHOW HELP WINDOW");
+	attroff(COLOR_PAIR(2));
+	attron(COLOR_PAIR(1));
+	mvprintw(ht/2 + 6, wd/2 - 17, "WINDOW SIZE: %3d X %3d", wd, ht); 
+	mvprintw(ht/2 + 8, wd/2 - 17, "PRESS ANY KEY TO CONTINUE");
+	attroff(COLOR_PAIR(1));
 	y = 0, x = 0;
 	move(y, x);
 	refresh();
 	getch();
 	clear();
 
-	attron(COLOR_PAIR(1));
-	mvprintw(ht - 1, 0, "row : %3d | cl: %3d | col: %3d | nc: %3d ", y, bf->cur_line, x, bf->num_chars );
-	move(y, x);
-	attroff(COLOR_PAIR(1));
-	refresh();
 
 
-	//attron(COLOR_PAIR(2));
 	start = bf;
 	head = bf;
 	temp2 = bf;
 	loadwin(start, 0);
+	attron(COLOR_PAIR(1));
+	mvprintw(ht - 1, 0, "| filename: %s | row : %3d | col: %3d | copy: \"%s\" |", filename, y, x, copybuf );
+	move(y, x);
+	attroff(COLOR_PAIR(1));
+	refresh();
 	move(0, 0);
 	while((ch = getch())){
 
@@ -165,7 +168,7 @@ int main(int argc, char const *argv[]){
 					temp = bf->prev;
 					
 				}
-				if(x == 0 && y ==0){
+				if(x == 0 && bf == head){
 					move(0, 0);
 				}
 				else if(x > 0 && x < bf->num_chars){
@@ -179,8 +182,14 @@ int main(int argc, char const *argv[]){
 
 
 				}
-				else if(x == 0){
-					if(bf->prev != NULL && bf->prev->num_chars == 0){
+				else if(x == 0 && bf->prev != NULL && ( bf->prev->num_chars + bf->num_chars - 1 < LINEMAX)){
+					if(bf == start ){
+						start = start->prev;
+					}
+					if(bf == temp2){
+							temp2 = bf->prev;
+					}
+					if(bf->prev->num_chars == 0){
 						bf->prev->line[0] = '\n';
 						bf->prev->num_chars = 1;
 					}
@@ -204,23 +213,52 @@ int main(int argc, char const *argv[]){
 						bufDecr(bf->next, 1);
 						
 					}
-					if(y == 0 && bf->prev != NULL && start->prev != NULL){
-						start = bf;
+					if(y == 0){
 						offY--;
 						loadwin(start, 0);
 						move(y, bf->curX = x = bf->num_chars - x - 1);
 					}
 					else{
-						if(y == 0)
-							y = 0;
-						else
-							y--;
+						y--;
 						move(y, bf->curX = x = bf->num_chars - x - 1);
 						loadwin(start, 0);	
 					}
 				}
 				break;
-			case KEY_DC:
+			case KEY_DC: //Delete key
+					if(bf->next != NULL){
+						temp = bf->next;
+					}
+					if(x >= 0 && x < bf->num_chars - 1){
+						memmove((bf->line + x), (bf->line + x + 1), bf->num_chars - x - 1);
+						(bf->num_chars)--;
+						bf->curX = x;
+						loadwin(start, 0);
+						move(y, x);
+						refresh();
+
+					}
+					else if(x == bf->num_chars - 1 && bf->next != NULL && (bf->num_chars + bf->next->num_chars - 1 < LINEMAX)){
+						memmove((bf->line + x), (bf->next->line), (bf->next->num_chars));
+						bf->num_chars = bf->num_chars + bf->next->num_chars - 1;
+						if(bf->next == temp2){
+							temp2 = bf;
+						}
+						if(bf->next->next != NULL){
+							bf->next->next->prev = bf;							
+						}
+						bf->next = bf->next->next;
+						free(temp->line);
+						free(temp);
+						if(bf->next != NULL){
+							bufDecr(bf->next, 1);							
+						}
+						bf->curX = x;
+						loadwin(start, 0);
+						move(y, x);
+						refresh();
+					}
+				break;
 			case KEY_HOME:
 				x = 0;
 				bf->curX = x;
@@ -237,7 +275,7 @@ int main(int argc, char const *argv[]){
 				move(y, bf->curX);
 				break;
 			case KEY_NPAGE:
-				for(int i = 0; i < ht - 2 && temp2->next != NULL; i++){
+				for(int i = 0; i < ht - 2 && temp2 != NULL && temp2->next != NULL; i++){
 					temp2 = temp2->next;
 				}
 				start = temp2;
@@ -247,7 +285,7 @@ int main(int argc, char const *argv[]){
 				loadwin(start, 0);
 				break;
 			case KEY_PPAGE:
-				for(int i = 0; i < ht - 2 && temp2->prev != NULL; i++){
+				for(int i = 0; i < ht - 2 && temp2 != NULL && temp2->prev != NULL; i++){
 					temp2 = temp2->prev;
 				}
 				start = temp2;
@@ -630,29 +668,67 @@ int main(int argc, char const *argv[]){
 			case KEY_F(4):
 				endwin();
 				close(fd);
-				printf("%s\n", filename);
-				bufPrintAll(head);
+/*				printf("%s\n", filename);
+				bufPrintAll(head);*/
 				bufDestroy(head);
 				return 0;
+				break;
+
+			case 14://change color of text
+				if(colr == 0){
+					colr++;
+					init_pair(3, COLOR_WHITE, COLOR_BLACK);
+				}
+				else if(colr == 1){
+					colr++;
+					init_pair(3, COLOR_RED, COLOR_BLACK);
+				}
+				else if(colr == 2){
+					colr++;
+					init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+				}
+				else if(colr == 3){
+					colr++;
+					init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+				}
+				else if(colr == 4){
+					colr++;
+					init_pair(3, COLOR_CYAN, COLOR_BLACK);
+				}
+				else if(colr == 5){
+					colr++;
+					init_pair(3, COLOR_BLUE, COLOR_BLACK);
+				}
+				else if(colr == 6){
+					colr++;
+					init_pair(3, COLOR_GREEN, COLOR_BLACK);
+				}
+				if(colr > 6){
+					colr = 0;
+				}
 				break;
 			case 8:
 			case KEY_F(10):
 				clear();
 				attron(COLOR_PAIR(1));
-				mvprintw(ht/2 - 6, wd/2 - (strlen("WELCOME TO DEVTEXT")/2), "WELCOME TO DEVTEXT");
+				mvprintw(ht/2 - 7, wd/2 -  17, "WELCOME TO DEVTEXT");
+				attroff(COLOR_PAIR(1));
 				attron(COLOR_PAIR(2));
-				mvprintw(ht/2 - 5, wd/2 - (strlen("CTRL+S OR F2 : SAVE")/2), "CTRL+S OR F2 : SAVE");
-				mvprintw(ht/2 - 4, wd/2 - (strlen("CTRL+A OR F3 : SAVE AND QUIT")/2), "CTRL+A OR F3 : SAVE AND QUIT");
-				mvprintw(ht/2 - 3, wd/2 - (strlen("CTRL+Q OR F4 : QUIT WITHOUT SAVE")/2), "CTRL+Q OR F4 : QUIT WITHOUT SAVE");
-				mvprintw(ht/2 - 2, wd/2 - (strlen("CTRL+F OR F5 : SEARCH")/2), "CTRL+F OR F5 : SEARCH");
-				mvprintw(ht/2 - 1, wd/2 - (strlen("CTRL+R OR F6 : SEARCH AND REPLACE")/2), "CTRL+R OR F6 : SEARCH AND REPLACE");
-				mvprintw(ht/2 - 0, wd/2 - (strlen("CTRL+X OR F7 : CUT")/2), "CTRL+X OR F7 : CUT");
-				mvprintw(ht/2 + 1, wd/2 - (strlen("CTRL+C OR F8 : COPY")/2), "CTRL+C OR F8 : COPY");
-				mvprintw(ht/2 + 2, wd/2 - (strlen("CTRL+V OR F9 : PASTE")/2), "CTRL+V OR F9 : PASTE");
-				mvprintw(ht/2 + 3, wd/2 - (strlen("CTRL+H OR F10 : SHOW HELP WINDOW")/2), "CTRL+H OR F10 : SHOW HELP WINDOW");
-				mvprintw(ht/2 + 4, wd/2 - (strlen("WINDOW SIZE:     X    ")/2), "WINDOW SIZE: %3d X %3d", wd, ht);
-				mvprintw(ht/2 + 5, wd/2 - (strlen("PRESS ANY KEY TO CONTINUE")/2), "PRESS ANY KEY TO CONTINUE");
-				attroff(COLOR_PAIR(3));
+				mvprintw(ht/2 - 5, wd/2 - 17, "CTRL+S OR F2 :  SAVE");
+				mvprintw(ht/2 - 4, wd/2 - 17, "CTRL+A OR F3 :  SAVE AND QUIT");
+				mvprintw(ht/2 - 3, wd/2 - 17, "CTRL+Q OR F4 :  QUIT WITHOUT SAVE");
+				mvprintw(ht/2 - 2, wd/2 - 17, "CTRL+F OR F5 :  SEARCH");
+				mvprintw(ht/2 - 1, wd/2 - 17, "CTRL+R OR F6 :  SEARCH AND REPLACE");
+				mvprintw(ht/2 - 0, wd/2 - 17, "CTRL+X OR F7 :  CUT");
+				mvprintw(ht/2 + 1, wd/2 - 17, "CTRL+C OR F8 :  COPY");
+				mvprintw(ht/2 + 2, wd/2 - 17, "CTRL+V OR F9 :  PASTE");
+				mvprintw(ht/2 + 3, wd/2 - 17, "CTRL+N       :  CHANGE TEXT COLOR");
+				mvprintw(ht/2 + 4, wd/2 - 17, "CTRL+H OR F10 : SHOW HELP WINDOW");
+				attroff(COLOR_PAIR(2));
+				attron(COLOR_PAIR(1));
+				mvprintw(ht/2 + 6, wd/2 - 17, "WINDOW SIZE: %3d X %3d", wd, ht); 
+				mvprintw(ht/2 + 8, wd/2 - 17, "PRESS ANY KEY TO CONTINUE");
+				attroff(COLOR_PAIR(1));
 				move(y, x);
 				curs_set(0);
 				getch();
@@ -660,7 +736,7 @@ int main(int argc, char const *argv[]){
 				loadwin(start, 0);
 				break;
 			default:
-				if(x >= 0 && x < LINEMAX && bf->num_chars != LINEMAX){
+				if(x >= 0 && x < LINEMAX - 1 && bf->num_chars < LINEMAX){
 					bf->curX = x;
 					if(x < LINEMAX - 4 && ch == '\t'){
 						lineInsert(bf, bf->curX, ' ');
@@ -673,11 +749,9 @@ int main(int argc, char const *argv[]){
 							ch = ' ';
 						lineInsert(bf, bf->curX, ch);						
 					}
-					clear();
 					loadwin(start, 0);
-					refresh();
-					if(bf->num_chars == LINEMAX - 1 || x == LINEMAX - 1){
-						x = LINEMAX - 1;
+					if(bf->num_chars == LINEMAX - 1 ){
+
 					}
 					else {
 						if(x < LINEMAX - 4 && ch == '\t')
@@ -688,7 +762,7 @@ int main(int argc, char const *argv[]){
 					
 				}
 				else {
-					x = LINEMAX - 1;
+
 				}
 				break;
 
@@ -699,7 +773,7 @@ int main(int argc, char const *argv[]){
 		move(ht -1, 0);
 		clrtoeol();
 		/*mvprintw(ht - 1, 0, "%s | row : %3d | col: %3d", filename, y, x);*/
-		mvprintw(ht - 1, 0, "%s | row : %3d | cl: %3d | col: %3d | nc: %3d | cp: \"%s\" |", filename, y, bf->cur_line, x, bf->num_chars , copybuf);
+		mvprintw(ht - 1, 0, "| filename: %s | row : %3d | col: %3d | copy: \"%s\" |", filename, y, x, copybuf );
 		move(y, x);
 		attroff(COLOR_PAIR(1));
 		refresh();

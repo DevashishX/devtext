@@ -59,12 +59,12 @@ void bufInsert(buffer *bf){ //insert b/w bf and bf->next buffers
 
 void bufDestroy(buffer *bf){
 	buffer *temp;
-	bf = bf->next;
+
 	while(bf != NULL){
 		temp = bf;
 		bf = bf->next;
-		free(temp);
 		free(temp->line);
+		free(temp);
 	}
 
 }
@@ -162,6 +162,9 @@ void lineInsert(buffer *bf, int loc, char ch){
 		bf->line[loc] = ch;
 		(bf->num_chars)++;
 	}
+	else if(bf->num_chars == LINEMAX){
+		return;
+	}
 	else if(bf->num_chars == 0){
 		bf->line[0] = ch;
 		(bf->num_chars)++;
@@ -171,14 +174,12 @@ void lineInsert(buffer *bf, int loc, char ch){
 		bf->line[loc] = ch;
 		(bf->num_chars)++;
 	}
-	else if(bf->num_chars == LINEMAX){
-		return;
-	}
+	return;
 }
 
 void bufDecr(buffer *bf, int val){
 	while(bf->next != NULL){
-		(bf->cur_line)--;
+		bf->cur_line = bf->cur_line - val;
 		bf = bf->next;
 	}
 	(bf->cur_line)--;
@@ -186,7 +187,7 @@ void bufDecr(buffer *bf, int val){
 
 void bufIncr(buffer *bf, int val){
 	while(bf->next != NULL){
-		(bf->cur_line)++;
+		bf->cur_line = bf->cur_line + val;
 		bf = bf->next;
 	}
 	(bf->cur_line)++;

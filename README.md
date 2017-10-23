@@ -1,4 +1,4 @@
-# Devtext  - A text editor in C language
+# Devtext  - A text editor in C language using NCURSES
 
 
 >Current Progress:
@@ -17,7 +17,9 @@
 
 >search, replace work
 
->copy-paste doesnt work
+>copy-paste and cut-paste work
+
+>Text can now change color
 
 
 
@@ -31,9 +33,15 @@
 
 * Use of Curser Keys to Navigate 
 
+* Home and End
+
 * Find and Replace
 
 * Pageup and Pagedown
+
+* Cut-Paste and Copy-Paste
+
+
 
 _ _ _ _ _ _ _ _ _
 
