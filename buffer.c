@@ -26,7 +26,7 @@ void bufInit(buffer *bf){
 
 }
 
-void bufCreateNext(buffer *bf){ //when next buffer is null CREATE NEW
+void bufCreateNext(buffer *bf){ /*when next buffer is null CREATE NEW*/
 	bf->next = (buffer *)malloc(sizeof(buffer) * 1);
 	bf->next->prev = bf;
 	bf->next->next = NULL;
@@ -37,7 +37,7 @@ void bufCreateNext(buffer *bf){ //when next buffer is null CREATE NEW
 
 }
 
-void bufInsert(buffer *bf){ //insert b/w bf and bf->next buffers
+void bufInsert(buffer *bf){ /*insert b/w bf and bf->next buffers*/
 	if(bf->next == NULL){
 		bufCreateNext(bf);
 		return;
@@ -139,9 +139,10 @@ void bufLoad(int fd, buffer *bf){
 
 void bufPrintAll(buffer *bf){
 
+	int i = 0;
 	while(bf != NULL){
 		printf("line no: %d\t num_chars: %d\t\t@", bf->cur_line, bf->num_chars);
-		for(int i = 0; i < bf->num_chars; i++){
+		for(i = 0; i < bf->num_chars; i++){
 			if(*(bf->line + i) == '\0'){
 				printf("#");
 			}	
@@ -151,6 +152,7 @@ void bufPrintAll(buffer *bf){
 			}	
 		}
 		printf("@");
+		i = 0;
 		
 		bf = bf->next;
 	}
@@ -191,6 +193,14 @@ void bufIncr(buffer *bf, int val){
 		bf = bf->next;
 	}
 	(bf->cur_line)++;
+}
+
+int fileexist(char const *filename){
+     int fd = open(filename, O_RDWR );   /* open file in read mode*/
+     if(fd == -1)                   /* couldn't open i.e. file not existing*/
+        return 0;
+     close(fd);   /*close file if opened i.e. file exists*/
+     return 1;
 }
 
 /*int bufInit(buffer *bf); ///done

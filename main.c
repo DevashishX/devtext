@@ -11,19 +11,14 @@
 #include "gui_ncs.h"
 #include "buffer.h"
 
-int fileexist(char const *path){
-     int fd = open(path, O_RDWR );   // open file in read mode
-     if(fd == -1)                   // couldn't open mean file not existing
-        return 0;
-     close(fd);   //close file if opened means file exists
-     return 1;
-}
+
 
 int main(int argc, char const *argv[]){
 	int fd, newfl = 0;
 	int ht, wd;
 	int srchflag = 0;
-	int x = 0, y = 0, offY = 0, ch, xstate = 0, cpyi = 0, colr = 0;
+	int x = 0, y = 0, offY = 0, ch, xstate = 0, cpyi = 0, colr = 1;
+	int i = 0;
 	char str[LINEMAX], rstr[LINEMAX], filename[255], *srch, copybuf[LINEMAX];
 	memset(filename, '\0', 255);
 	memset(str, '\0', LINEMAX);
@@ -63,12 +58,16 @@ int main(int argc, char const *argv[]){
 
 
 /* #################################### */
+
 	curses_init();
-	//idlok(stdscr, TRUE);
+
 /* #################################### */
+
 	getmaxyx(stdscr, ht, wd);
 	keypad(stdscr, true);
+
 	/* HELP MENU */
+	
 	attron(COLOR_PAIR(1));
 	mvprintw(ht/2 - 7, wd/2 -  17, "WELCOME TO DEVTEXT");
 	attroff(COLOR_PAIR(1));
@@ -109,7 +108,7 @@ int main(int argc, char const *argv[]){
 	while((ch = getch())){
 
 		switch (ch){
-			case KEY_UP: //up arrow
+			case KEY_UP: /*up arrow*/
 				if(y > 0 && bf != NULL && bf->prev != NULL){
 					bf = bf->prev;
 					if(x >= bf->num_chars){
@@ -127,7 +126,7 @@ int main(int argc, char const *argv[]){
 					move(y, x);
 				}
 				break;
-			case KEY_DOWN: //down arrow
+			case KEY_DOWN: /*down arrow*/
 				if(y < ht - 2 && bf != NULL){
 					if(bf->next != NULL){
 						bf = bf->next;
@@ -152,17 +151,17 @@ int main(int argc, char const *argv[]){
 					move(y, x);
 				}
 				break;
-			case KEY_LEFT: //left arrow
+			case KEY_LEFT: /*left arrow*/
 				if(x > 0){
 					move(y, --x);
 				}
 				break;
-			case KEY_RIGHT: //right arrow
+			case KEY_RIGHT: /*right arrow*/
 				if(x < LINEMAX - 1 && x < bf->num_chars - 1){
 					move(y, ++x);
 				}
 				break;
-			case KEY_BACKSPACE: //BACKSPACE key
+			case KEY_BACKSPACE: /*BACKSPACE key*/
 				bf->curX = x;
 				if(bf->prev != NULL){
 					temp = bf->prev;
@@ -225,7 +224,7 @@ int main(int argc, char const *argv[]){
 					}
 				}
 				break;
-			case KEY_DC: //Delete key
+			case KEY_DC: /*Delete key*/
 					if(bf->next != NULL){
 						temp = bf->next;
 					}
@@ -275,9 +274,10 @@ int main(int argc, char const *argv[]){
 				move(y, bf->curX);
 				break;
 			case KEY_NPAGE:
-				for(int i = 0; i < ht - 2 && temp2 != NULL && temp2->next != NULL; i++){
+				for(i = 0; i < ht - 2 && temp2 != NULL && temp2->next != NULL; i++){
 					temp2 = temp2->next;
 				}
+				i = 0;
 				start = temp2;
 				bf = temp2;
 				y = x = 0;
@@ -285,9 +285,10 @@ int main(int argc, char const *argv[]){
 				loadwin(start, 0);
 				break;
 			case KEY_PPAGE:
-				for(int i = 0; i < ht - 2 && temp2 != NULL && temp2->prev != NULL; i++){
+				for(i = 0; i < ht - 2 && temp2 != NULL && temp2->prev != NULL; i++){
 					temp2 = temp2->prev;
 				}
+				i = 0;
 				start = temp2;
 				bf = temp2;
 				y = x = 0;
@@ -337,7 +338,7 @@ int main(int argc, char const *argv[]){
 				}
 				break;
 			case 6:
-			case KEY_F(5): //search
+			case KEY_F(5): /*search*/
 				temp2 = head;
 				attron(COLOR_PAIR(1));
 				move(ht - 1, 0);
@@ -405,7 +406,7 @@ int main(int argc, char const *argv[]){
 				srchflag = 0;
 				break;
 			case 18:
-			case KEY_F(6): //search replace
+			case KEY_F(6): /*search replace*/
 				temp2 = head;
 				attron(COLOR_PAIR(1));
 				move(ht - 1, 0);
@@ -449,14 +450,16 @@ int main(int argc, char const *argv[]){
 									x++;
 								}
 								else if((ch == KEY_F(6) || ch == 18) && (x + strlen(rstr) - 1 < LINEMAX)){
-									for(int i = 0; i < strlen(str); i++){
+									for(i = 0; i < strlen(str); i++){
 										memmove((bf->line + x), (bf->line + x + 1), bf->num_chars - x - 1);
 										(bf->num_chars)--;
 										
 									}
-									for(int i = 0; i < strlen(rstr); i++){
+									i = 0;
+									for( i = 0; i < strlen(rstr); i++){
 										lineInsert(bf, x + i, rstr[i]);
 									}
+									i = 0;
 									attroff(COLOR_PAIR(1));
 									loadwin(start, 0);
 									attron(COLOR_PAIR(1));
@@ -492,7 +495,7 @@ int main(int argc, char const *argv[]){
 				break;
 
 			case 24:
-			case KEY_F(7): //cut ctrl+X
+			case KEY_F(7): /*cut ctrl+X*/
 				attron(COLOR_PAIR(1));
 				move(ht - 1, 0);
 				clrtoeol();
@@ -520,11 +523,12 @@ int main(int argc, char const *argv[]){
 					}
 					else if(ch == 24 || ch == KEY_F(7)){
 						x = xstate;
-						for(int i = 0; i < strlen(copybuf); i++){
+						for(i = 0; i < strlen(copybuf); i++){
 							memmove((bf->line + x), (bf->line + x + 1), bf->num_chars - x - 1);
 							(bf->num_chars)--;
 										
 						}
+						i = 0;
 						loadwin(start, 0);
 						move(y, x);
 						break;
@@ -549,7 +553,7 @@ int main(int argc, char const *argv[]){
 
 				break;
 			case 3:
-			case KEY_F(8): //copy ctrl+C
+			case KEY_F(8): /*copy ctrl+C*/
 				attron(COLOR_PAIR(1));
 				move(ht - 1, 0);
 				clrtoeol();
@@ -601,20 +605,21 @@ int main(int argc, char const *argv[]){
 
 				break;
 			case 22:
-			case KEY_F(9): //paste ctrl+V
+			case KEY_F(9): /*paste ctrl+V*/
 				if(strlen(copybuf) != 0 && copybuf[0] != '\0' && x + strlen(copybuf) - 1 < LINEMAX){
-					for(int i = 0; i < strlen(copybuf); i++){
+					for(i = 0; i < strlen(copybuf); i++){
 						lineInsert(bf, x + i, copybuf[i]);
 					}
 					
 				}
+				i = 0;
 				move(y, bf->curX = x = x + strlen(copybuf));
 				loadwin(start, 0);
 
 			
 				break;
-			case 19: // ctrl+S
-			case KEY_F(2): //save
+			case 19: /*ctrl+S*/
+			case KEY_F(2): /*save*/
 				move(ht -1, 0);
 				clrtoeol();
 				if(newfl == 1){
@@ -641,7 +646,7 @@ int main(int argc, char const *argv[]){
 
 				break;
 			case 1:
-			case KEY_F(3): //save and quit
+			case KEY_F(3): /*save and quit*/
 				move(ht - 1, 0);
 				clrtoeol();
 				if(newfl == 1){
@@ -674,7 +679,7 @@ int main(int argc, char const *argv[]){
 				return 0;
 				break;
 
-			case 14://change color of text
+			case 14:/*change color of text*/
 				if(colr == 0){
 					colr++;
 					init_pair(3, COLOR_WHITE, COLOR_BLACK);
@@ -773,7 +778,7 @@ int main(int argc, char const *argv[]){
 		move(ht -1, 0);
 		clrtoeol();
 		/*mvprintw(ht - 1, 0, "%s | row : %3d | col: %3d", filename, y, x);*/
-		mvprintw(ht - 1, 0, "| filename: %s | row : %3d | col: %3d | copy: \"%s\" |", filename, y, x, copybuf );
+		mvprintw(ht - 1, 0, "| filename: %s | row : %3d | col: %3d | copy: \"%s\" |", filename, bf->cur_line, x, copybuf );
 		move(y, x);
 		attroff(COLOR_PAIR(1));
 		refresh();
