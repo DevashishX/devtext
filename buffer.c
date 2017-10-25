@@ -1,7 +1,3 @@
-#include "buffer.h"
-#include "gui_ncs.h"
-
-
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -10,6 +6,11 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#include "buffer.h"
+#include "gui_ncs.h"
+
+
 
 void lineInit(buffer *bf){
 	bf->line = (char *)malloc(sizeof(char) * LINEMAX);

@@ -1,0 +1,5 @@
+Resources for Learning NCURSES:
+1. www.tldp.org - ncurses tutorial
+2. www.manpages.ubuntu.com  - ncurses man pages
+
+

@@ -14,12 +14,14 @@
 
 
 int main(int argc, char const *argv[]){
+
+
 	int fd, newfl = 0;
 	int ht, wd;
 	int srchflag = 0;
 	int x = 0, y = 0, offY = 0, ch, xstate = 0, cpyi = 0, colr = 1;
 	int i = 0;
-	char str[LINEMAX], rstr[LINEMAX], filename[255], *srch, copybuf[LINEMAX];
+	char str[LINEMAX], rstr[LINEMAX], filename[255], *srch, copybuf[LINEMAX]; /*max file name in linux is 255chars*/
 	memset(filename, '\0', 255);
 	memset(str, '\0', LINEMAX);
 	memset(rstr, '\0', LINEMAX);
@@ -27,6 +29,8 @@ int main(int argc, char const *argv[]){
 	buffer *bf, *start, *temp, *temp2, *head;
 	bf = (buffer *)malloc(sizeof(buffer));
 	bufInit(bf);
+
+
 	if(argc == 2){
 		strcpy(filename, argv[1]);
 		if(fileexist(argv[1])){
@@ -105,6 +109,8 @@ int main(int argc, char const *argv[]){
 	attroff(COLOR_PAIR(1));
 	refresh();
 	move(0, 0);
+
+
 	while((ch = getch())){
 
 		switch (ch){
@@ -126,6 +132,8 @@ int main(int argc, char const *argv[]){
 					move(y, x);
 				}
 				break;
+
+
 			case KEY_DOWN: /*down arrow*/
 				if(y < ht - 2 && bf != NULL){
 					if(bf->next != NULL){
@@ -151,16 +159,22 @@ int main(int argc, char const *argv[]){
 					move(y, x);
 				}
 				break;
+
+
 			case KEY_LEFT: /*left arrow*/
 				if(x > 0){
 					move(y, --x);
 				}
 				break;
+
+
 			case KEY_RIGHT: /*right arrow*/
 				if(x < LINEMAX - 1 && x < bf->num_chars - 1){
 					move(y, ++x);
 				}
 				break;
+
+
 			case KEY_BACKSPACE: /*BACKSPACE key*/
 				bf->curX = x;
 				if(bf->prev != NULL){
@@ -224,6 +238,8 @@ int main(int argc, char const *argv[]){
 					}
 				}
 				break;
+
+
 			case KEY_DC: /*Delete key*/
 					if(bf->next != NULL){
 						temp = bf->next;
@@ -258,11 +274,15 @@ int main(int argc, char const *argv[]){
 						refresh();
 					}
 				break;
+
+
 			case KEY_HOME:
 				x = 0;
 				bf->curX = x;
 				move(y, bf->curX);
 				break;
+
+
 			case KEY_END:
 				if(bf->num_chars > 0){
 					x = bf->num_chars - 1;					
@@ -273,28 +293,34 @@ int main(int argc, char const *argv[]){
 				bf->curX = x;
 				move(y, bf->curX);
 				break;
+
+
 			case KEY_NPAGE:
 				for(i = 0; i < ht - 2 && temp2 != NULL && temp2->next != NULL; i++){
 					temp2 = temp2->next;
 				}
-				i = 0;
+				i = 0; /* FOR C89 */
 				start = temp2;
 				bf = temp2;
 				y = x = 0;
 				move(y, x);
 				loadwin(start, 0);
 				break;
+
+
 			case KEY_PPAGE:
 				for(i = 0; i < ht - 2 && temp2 != NULL && temp2->prev != NULL; i++){
 					temp2 = temp2->prev;
 				}
-				i = 0;
+				i = 0; /* FOR C89 */
 				start = temp2;
 				bf = temp2;
 				y = x = 0;
 				move(y, x);
 				loadwin(start, 0);
 				break;
+
+
 			case '\n':
 				bf->curX = x;
 				lineInsert(bf, bf->curX, ch);
@@ -337,6 +363,8 @@ int main(int argc, char const *argv[]){
 					loadwin(start, 0);
 				}
 				break;
+
+
 			case 6:
 			case KEY_F(5): /*search*/
 				temp2 = head;
@@ -405,6 +433,8 @@ int main(int argc, char const *argv[]){
 				}
 				srchflag = 0;
 				break;
+
+
 			case 18:
 			case KEY_F(6): /*search replace*/
 				temp2 = head;
@@ -491,8 +521,8 @@ int main(int argc, char const *argv[]){
 					ch = getch();
 				}
 				srchflag = 0;
-				
 				break;
+
 
 			case 24:
 			case KEY_F(7): /*cut ctrl+X*/
@@ -550,8 +580,9 @@ int main(int argc, char const *argv[]){
 				}			
 
 				move(y, x);
-
 				break;
+
+
 			case 3:
 			case KEY_F(8): /*copy ctrl+C*/
 				attron(COLOR_PAIR(1));
@@ -602,8 +633,9 @@ int main(int argc, char const *argv[]){
 				move(y, x);
 				}				
 				move(y, x);
-
 				break;
+
+
 			case 22:
 			case KEY_F(9): /*paste ctrl+V*/
 				if(strlen(copybuf) != 0 && copybuf[0] != '\0' && x + strlen(copybuf) - 1 < LINEMAX){
@@ -614,10 +646,10 @@ int main(int argc, char const *argv[]){
 				}
 				i = 0;
 				move(y, bf->curX = x = x + strlen(copybuf));
-				loadwin(start, 0);
-
-			
+				loadwin(start, 0);			
 				break;
+
+
 			case 19: /*ctrl+S*/
 			case KEY_F(2): /*save*/
 				move(ht -1, 0);
@@ -643,8 +675,9 @@ int main(int argc, char const *argv[]){
 					fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 				}
 				bufSave(fd, head);
-
 				break;
+
+
 			case 1:
 			case KEY_F(3): /*save and quit*/
 				move(ht - 1, 0);
@@ -679,6 +712,7 @@ int main(int argc, char const *argv[]){
 				return 0;
 				break;
 
+
 			case 14:/*change color of text*/
 				if(colr == 0){
 					colr++;
@@ -712,6 +746,8 @@ int main(int argc, char const *argv[]){
 					colr = 0;
 				}
 				break;
+
+
 			case 8:
 			case KEY_F(10):
 				clear();
@@ -740,6 +776,8 @@ int main(int argc, char const *argv[]){
 				curs_set(2);
 				loadwin(start, 0);
 				break;
+
+
 			default:
 				if(x >= 0 && x < LINEMAX - 1 && bf->num_chars < LINEMAX){
 					bf->curX = x;
@@ -790,4 +828,5 @@ int main(int argc, char const *argv[]){
 	close(fd);
 	bufDestroy(head);
 	return 0;
+
 }
