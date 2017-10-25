@@ -51,7 +51,7 @@ int main(int argc, char const *argv[]){
 	else{
 		printf("USAGE: ./devtext <filename> or ./devtext\n");
 		bufDestroy(bf);
-		free(bf);
+
 		return 0;
 	}
 
