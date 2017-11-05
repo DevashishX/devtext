@@ -43,20 +43,30 @@
 * Cut-Paste and Copy-Paste
 
 
-Name: Devashish Gaikwad
-MIS : 111608023
+##Name: Devashish Gaikwad
+##MIS : 111608023
 
 Description:
 Devtext is a Text editor made with NCURSES library for Terminal UI.
+
 It uses Linked list of lines as buffer to store the document line by line.
+
 The data structure is called as "buffer", which contains another structure "line".
+
 Declaring many buffers in the same program is possible (possibly for editing two text files at the same time).
+
 buffer.c contains all the functions necessary for using buffer data structure.
+
 gui_ncs.c contains a few Terminal UI functions for rendering the screen.
+
 NCURSES does not support scrolling with WINDOW datstructure(at least not in the modern sense).
+
 so a workaround has been used (loadwin function).
+
 The current maximum line width is 160 characters, It can be changed in buffer.h (a constant has been defined in it).
+
 Window resizing is not supported by NCURSES, thus it is not possible to implement.
+
 
 
 
