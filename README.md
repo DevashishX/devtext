@@ -2,6 +2,11 @@
 
 ## Requires NCURSES to work.
 
+## Name: Devashish Gaikwad
+
+## MIS : 111608023
+
+
 >Current Progress:
 
 >arrow keys work
@@ -44,10 +49,6 @@
 
 _ _ _ _ _ _ _ _
 
-## Name: Devashish Gaikwad
-
-
-## MIS : 111608023
 
 
 
