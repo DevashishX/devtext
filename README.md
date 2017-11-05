@@ -42,11 +42,18 @@
 
 * Cut-Paste and Copy-Paste
 
+_ _ _ _ _ _ _ _
 
 ##Name: Devashish Gaikwad
+
+
 ##MIS : 111608023
 
-Description:
+
+
+###Description:
+
+
 Devtext is a Text editor made with NCURSES library for Terminal UI.
 
 It uses Linked list of lines as buffer to store the document line by line.
