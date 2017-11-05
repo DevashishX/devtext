@@ -67,7 +67,7 @@ _ _ _ _ _ _ _ _
 
 * gui_ncs.c contains a few Terminal UI functions for rendering the screen.
 
-* NCURSES does not support scrolling with WINDOW datstructure(at least not in the modern sense).
+* NCURSES does not support scrolling with default provided WINDOW data structure(at least not in the modern sense).
 
 * so a workaround has been used (loadwin function).
 
