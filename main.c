@@ -32,6 +32,7 @@ int main(int argc, char const *argv[]){
 
 
 	if(argc == 2){
+		/*./devtext <filename> checks if the filename exists already or not, else create new file*/
 		strcpy(filename, argv[1]);
 		if(fileexist(argv[1])){
 			fd = open(argv[1], O_RDWR );
@@ -47,6 +48,8 @@ int main(int argc, char const *argv[]){
 		}
 	}
 	else if(argc == 1){
+
+		/*./devtext i.e. open an empty file, initially the data is in buffer unless the file saved*/
 
 		newfl = 1;
 		bf->line[0]='\n';
@@ -295,7 +298,7 @@ int main(int argc, char const *argv[]){
 				break;
 
 
-			case KEY_NPAGE:
+			case KEY_NPAGE: /*next page : page down*/
 				for(i = 0; i < ht - 2 && temp2 != NULL && temp2->next != NULL; i++){
 					temp2 = temp2->next;
 				}
@@ -308,7 +311,7 @@ int main(int argc, char const *argv[]){
 				break;
 
 
-			case KEY_PPAGE:
+			case KEY_PPAGE: /*previous page : page up*/
 				for(i = 0; i < ht - 2 && temp2 != NULL && temp2->prev != NULL; i++){
 					temp2 = temp2->prev;
 				}
@@ -321,7 +324,7 @@ int main(int argc, char const *argv[]){
 				break;
 
 
-			case '\n':
+			case '\n': /*enter is pressed*/
 				bf->curX = x;
 				lineInsert(bf, bf->curX, ch);
 				if(x < bf->num_chars -1){
@@ -365,7 +368,7 @@ int main(int argc, char const *argv[]){
 				break;
 
 
-			case 6:
+			case 6: /*CTRL-F*/
 			case KEY_F(5): /*search*/
 				temp2 = head;
 				attron(COLOR_PAIR(1));
@@ -435,7 +438,7 @@ int main(int argc, char const *argv[]){
 				break;
 
 
-			case 18:
+			case 18: /*CTRL-R*/
 			case KEY_F(6): /*search replace*/
 				temp2 = head;
 				attron(COLOR_PAIR(1));
@@ -524,7 +527,7 @@ int main(int argc, char const *argv[]){
 				break;
 
 
-			case 24:
+			case 24: /*CTRL-X*/
 			case KEY_F(7): /*cut ctrl+X*/
 				attron(COLOR_PAIR(1));
 				move(ht - 1, 0);
@@ -636,7 +639,7 @@ int main(int argc, char const *argv[]){
 				break;
 
 
-			case 22:
+			case 22: /*CTRL-V*/
 			case KEY_F(9): /*paste ctrl+V*/
 				if(strlen(copybuf) != 0 && copybuf[0] != '\0' && x + strlen(copybuf) - 1 < LINEMAX){
 					for(i = 0; i < strlen(copybuf); i++){
@@ -678,7 +681,7 @@ int main(int argc, char const *argv[]){
 				break;
 
 
-			case 1:
+			case 1: /*CTRL-A*/
 			case KEY_F(3): /*save and quit*/
 				move(ht - 1, 0);
 				clrtoeol();
@@ -702,7 +705,7 @@ int main(int argc, char const *argv[]){
 					fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 				}
 				bufSave(fd, head);
-			case 17:
+			case 17:/*CTRL-Q there is no break statement.*/
 			case KEY_F(4):
 				endwin();
 				close(fd);
@@ -748,7 +751,7 @@ int main(int argc, char const *argv[]){
 				break;
 
 
-			case 8:
+			case 8: /*ctrl-h help screen*/
 			case KEY_F(10):
 				clear();
 				attron(COLOR_PAIR(1));
@@ -781,6 +784,7 @@ int main(int argc, char const *argv[]){
 			default:
 				if(x >= 0 && x < LINEMAX - 1 && bf->num_chars < LINEMAX){
 					bf->curX = x;
+					/*treat tab as 4 spaces*/
 					if(x < LINEMAX - 4 && ch == '\t'){
 						lineInsert(bf, bf->curX, ' ');
 						lineInsert(bf, bf->curX, ' ');
@@ -788,6 +792,7 @@ int main(int argc, char const *argv[]){
 						lineInsert(bf, bf->curX, ' ');
 					}
 					else{
+						/*treat tab as 1 space*/
 						if(ch == '\t')
 							ch = ' ';
 						lineInsert(bf, bf->curX, ch);						

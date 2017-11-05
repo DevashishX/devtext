@@ -2,4 +2,15 @@ Resources for Learning NCURSES:
 1. www.tldp.org - ncurses tutorial
 2. www.manpages.ubuntu.com  - ncurses man pages
 
+Resources to get familiar with Text editors:
+1.https://viewsourcecode.org/snaptoken/kilo/ - not very usefull as it uses termios
+
+A very good book about text editors:
+
+The Craft of Text Editing
+
+Link:
+https://www.finseth.com/craft/craft.pdf
+
+
 

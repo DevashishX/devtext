@@ -71,7 +71,7 @@ _ _ _ _ _ _ _ _
 
 * so a workaround has been used (loadwin function).
 
-* The current maximum line width is 160 characters, It can be changed in buffer.h (a constant has been defined in it).
+* The current maximum line width is 180 characters, It can be changed in buffer.h (a constant has been defined in it).
 
 * Window resizing is not supported by NCURSES, thus it is not possible to implement.
 

@@ -11,13 +11,14 @@
 #include "gui_ncs.h"
 
 
-
+/*initialize line*/
 void lineInit(buffer *bf){
 	bf->line = (char *)malloc(sizeof(char) * LINEMAX);
 	bf->line = memset(bf->line, '\0', LINEMAX);
 
 }
 
+/*initialize buffer*/
 void bufInit(buffer *bf){
 	bf->next = NULL;
 	bf->prev = NULL;
@@ -57,7 +58,7 @@ void bufInsert(buffer *bf){ /*insert b/w bf and bf->next buffers*/
 }
 
 
-
+/*destroys (clears all data in them) all the buffers after and including current buffer. */
 void bufDestroy(buffer *bf){
 	buffer *temp;
 
@@ -70,6 +71,7 @@ void bufDestroy(buffer *bf){
 
 }
 
+/*saves the buffer into the file using file descriptor*/
 void bufSave(int fd, buffer *bf){
 	if(lseek(fd, 0, SEEK_SET) == -1){
 		INFO;
@@ -85,7 +87,7 @@ void bufSave(int fd, buffer *bf){
 }
 
 
-
+/*loads the data into buffer from text file*/
 void bufLoad(int fd, buffer *bf){
 	char ch;
 	int err, linenum = 0, i = 0;
@@ -137,7 +139,7 @@ void bufLoad(int fd, buffer *bf){
 
 
 
-
+/*this is debugging function, kept for future testing. Prints all the buffer contents on terminal in plain text*/
 void bufPrintAll(buffer *bf){
 
 	int i = 0;
@@ -180,6 +182,7 @@ void lineInsert(buffer *bf, int loc, char ch){
 	return;
 }
 
+/*Decrese the line number of buffers by value, starting from the same buffer*/
 void bufDecr(buffer *bf, int val){
 	while(bf->next != NULL){
 		bf->cur_line = bf->cur_line - val;
@@ -188,6 +191,7 @@ void bufDecr(buffer *bf, int val){
 	(bf->cur_line)--;
 }
 
+/*Increase the line number of buffers by value, starting from the same buffer*/
 void bufIncr(buffer *bf, int val){
 	while(bf->next != NULL){
 		bf->cur_line = bf->cur_line + val;
@@ -197,7 +201,7 @@ void bufIncr(buffer *bf, int val){
 }
 
 int fileexist(char const *filename){
-     int fd = open(filename, O_RDWR );   /* open file in read mode*/
+     int fd = open(filename, O_RDWR );   /* open file in read/write mode*/
      if(fd == -1)                   /* couldn't open i.e. file not existing*/
         return 0;
      close(fd);   /*close file if opened i.e. file exists*/

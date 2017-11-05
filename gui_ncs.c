@@ -10,7 +10,7 @@ void curses_init(){
     raw();
     curs_set(2);
     start_color();
-    init_pair(1, COLOR_CYAN, COLOR_BLACK);
+    init_pair(1, COLOR_CYAN, COLOR_BLACK); /*COLOR codes for ncurses*/
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     init_pair(3, COLOR_WHITE, COLOR_BLACK);
 
@@ -18,7 +18,7 @@ void curses_init(){
 
 }
 
-
+/*Renders the window from the first line i.e. Y = 0, and the "start" buffer pointer.*/
 void loadwin(buffer *bf, int y){
 	clear();
 	attron(COLOR_PAIR(3));
@@ -33,6 +33,7 @@ void loadwin(buffer *bf, int y){
 }
 
 
+/*not used, was initially supposed to put tildes on each line, but later discarded.*/
 void tildeall(){
 	int x = 0, y = 0, ht;
 	getmaxyx(stdscr, ht, x);

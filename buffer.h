@@ -1,8 +1,14 @@
 #ifndef BUFFER_H
 #define BUFFER_H 
 
-
+/*debugging FUNCTION-MACRO*/
 #define INFO printf("\nline %d : %s : %s\n", __LINE__, __FILE__, __func__)
+
+/*
+ * increase the value to your screen width as shown on 
+ * devtext start screen for full width experience
+*/
+
 #define LINEMAX 180
 
 #define TRUE 1
@@ -18,8 +24,6 @@ typedef struct buffer{
 	int num_chars;
 	int curX;
 	char *line;
-
-
 
 }buffer;
 
