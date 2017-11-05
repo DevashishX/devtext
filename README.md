@@ -44,14 +44,14 @@
 
 _ _ _ _ _ _ _ _
 
-##Name: Devashish Gaikwad
+## Name: Devashish Gaikwad
 
 
-##MIS : 111608023
+## MIS : 111608023
 
 
 
-###Description:
+### Description:
 
 
 Devtext is a Text editor made with NCURSES library for Terminal UI.
